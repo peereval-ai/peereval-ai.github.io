@@ -1,11 +1,424 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>PeerEval</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PeerEval</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap">
+<style>
+:root {
+  --ground: #f5f7fa;
+  --surface: #ffffff;
+  --surface-2: #f0f3f8;
+  --ink: #141a27;
+  --body: #3f4859;
+  --muted: #697387;
+  --line: #e2e6ee;
+  --blue: #2f62c4;
+  --blue-soft: #e5edfb;
+  --orange: #c9661f;
+  --orange-soft: #fbece0;
+  --focus: #2f62c4;
+  --neutral-cell: #eef1f6;
+  --diag: #e3e7ee;
+  --shadow: 0 1px 2px rgba(20, 26, 39, .05), 0 4px 16px rgba(20, 26, 39, .05);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --ground: #0e121c;
+    --surface: #161c29;
+    --surface-2: #1c2333;
+    --ink: #e9edf5;
+    --body: #c3cad8;
+    --muted: #949db0;
+    --line: #283047;
+    --blue: #7ea5f0;
+    --blue-soft: #1e2b47;
+    --orange: #f0995a;
+    --orange-soft: #3a2718;
+    --focus: #7ea5f0;
+    --neutral-cell: #20283a;
+    --diag: #1a2030;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 4px 16px rgba(0, 0, 0, .25);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ground: #0e121c;
+  --surface: #161c29;
+  --surface-2: #1c2333;
+  --ink: #e9edf5;
+  --body: #c3cad8;
+  --muted: #949db0;
+  --line: #283047;
+  --blue: #7ea5f0;
+  --blue-soft: #1e2b47;
+  --orange: #f0995a;
+  --orange-soft: #3a2718;
+  --focus: #7ea5f0;
+  --neutral-cell: #20283a;
+  --diag: #1a2030;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 4px 16px rgba(0, 0, 0, .25);
+}
+
+[hidden] { display: none !important; }
+* { box-sizing: border-box; }
+body {
+  background: var(--ground);
+  color: var(--body);
+  font: 15px/1.5 "IBM Plex Sans", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding-inline: 20px;
+  padding-block: 28px 48px;
+}
+.wrap { max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+h1, h2 { color: var(--ink); margin: 0; text-wrap: balance; }
+h1 { font: 700 clamp(28px, 4vw, 40px)/1.1 "Source Serif 4", Georgia, serif; letter-spacing: -.01em; }
+h2 { font: 700 22px/1.2 "Source Serif 4", Georgia, serif; }
+p { margin: 0; }
+.num { font-variant-numeric: tabular-nums; }
+.lede { max-width: 66ch; margin-top: 8px; }
+.sub { color: var(--muted); margin-top: 4px; max-width: 70ch; }
+
+/* category tabs (arena style) */
+.bar { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); }
+.tabs { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; max-width: 100%; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  appearance: none; background: none; border: 0; border-bottom: 2px solid transparent; margin-bottom: -1px;
+  padding: 10px 14px; font-family: inherit; font-size: 14px; font-weight: 500; line-height: 1.2;
+  color: var(--muted); cursor: pointer; white-space: nowrap;
+}
+.tab:hover { color: var(--ink); }
+.tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--blue); font-weight: 600; }
+.seg { display: inline-flex; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 3px; gap: 2px; margin-bottom: 8px; }
+.chip {
+  appearance: none; border: 0; background: none; color: var(--muted); font-family: inherit; font-size: 13px; font-weight: 500;
+  line-height: 1.2; padding: 6px 12px; border-radius: 7px; cursor: pointer; white-space: nowrap;
+}
+.chip:hover { color: var(--ink); }
+.chip[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); font-weight: 600; }
+button:focus-visible, .cell:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* table */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); }
+.scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; min-width: 700px; }
+thead th {
+  text-align: left; font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+  color: var(--muted); padding: 12px 14px; border-bottom: 1px solid var(--line); background: var(--surface-2); white-space: nowrap;
+}
+thead th:first-child { border-top-left-radius: 14px; }
+thead th:last-child { border-top-right-radius: 14px; }
+th button {
+  appearance: none; background: none; border: 0; padding: 0; font: inherit; color: inherit; letter-spacing: inherit;
+  text-transform: inherit; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;
+}
+th button:hover, th[aria-sort] button { color: var(--ink); }
+.arrow { font-size: 10px; }
+tbody td { padding: 13px 14px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+tbody tr:last-child td { border-bottom: 0; }
+tbody tr:hover td { background: var(--surface-2); }
+.rank { width: 86px; white-space: nowrap; }
+.medal { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--surface-2); font-weight: 700; color: var(--ink); }
+.first .medal { background: var(--blue); color: #fff; }
+.delta { font-size: 12px; font-weight: 600; margin-left: 6px; }
+.delta.up { color: var(--blue); }
+.delta.down { color: var(--orange); }
+.model { font-weight: 600; color: var(--ink); white-space: nowrap; }
+.org { color: var(--muted); white-space: nowrap; }
+.pill { display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.pill.prop { background: var(--blue-soft); color: var(--blue); }
+.pill.open { background: var(--orange-soft); color: var(--orange); }
+.scorecell { display: flex; align-items: center; gap: 12px; min-width: 200px; }
+.score { font-weight: 700; color: var(--ink); width: 40px; }
+.track { display: block; flex: 1; height: 8px; background: var(--surface-2); border-radius: 999px; overflow: hidden; max-width: 240px; }
+.fill { display: block; height: 100%; border-radius: 999px; background: var(--blue); }
+.fill.open { background: var(--orange); }
+.plain { color: var(--ink); font-weight: 500; white-space: nowrap; }
+.foot-note { font-size: 13px; color: var(--muted); padding: 10px 14px; border-top: 1px solid var(--line); }
+
+/* heatmap */
+.hm-card { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+.hm-top { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; font-size: 13px; color: var(--muted); align-items: center; }
+.legend { display: flex; align-items: center; gap: 8px; }
+.ramp { width: 140px; height: 10px; border-radius: 999px; display: inline-block; }
+.hm { display: grid; grid-template-columns: 104px repeat(6, minmax(64px, 1fr)); gap: 4px; min-width: 560px; }
+.axis { font-size: 12px; color: var(--muted); font-weight: 600; display: flex; align-items: center; }
+.colh { justify-content: center; text-align: center; padding-bottom: 4px; }
+.rowh { justify-content: flex-end; padding-right: 8px; text-align: right; }
+.cell { height: 50px; border-radius: 8px; display: grid; place-items: center; font-weight: 700; font-size: 14px; transition: transform .12s ease, opacity .12s ease; }
+.cell.diag { background: var(--diag); color: var(--muted); font-weight: 400; }
+.cell:not(.diag):hover, .cell:not(.diag):focus-visible { transform: scale(1.05); }
+.hm.dim .cell:not(.diag):not(.hl) { opacity: .4; }
+.readout { min-height: 24px; color: var(--ink); }
+
+footer { font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
+footer a { color: var(--blue); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
 </head>
 <body>
-  <h1>PeerEval</h1>
-  <p>Open evaluation for language models.</p>
+
+<div class="wrap">
+  <header>
+    <h1>PeerEval</h1>
+    <p class="lede">Open evaluation for language models. Six LLMs answer the same questions, then judge each other's answers without knowing who wrote them. Models are ranked by PRD Peer Rank score.</p>
+  </header>
+
+  <div class="bar">
+    <div class="tabs" role="tablist" aria-label="Benchmark" id="tabs"></div>
+    <div class="seg" role="group" aria-label="Model type" id="type-seg"></div>
+  </div>
+
+  <section class="card">
+    <div class="scroll">
+      <table>
+        <thead><tr id="lb-head"></tr></thead>
+        <tbody id="lb-body"></tbody>
+      </table>
+    </div>
+    <p class="foot-note" id="lb-note"></p>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:12px">
+    <div>
+      <h2>Head-to-head</h2>
+      <p class="sub">How often the model on the left beats the model on top, over all three benchmarks. Ties count as half a win.</p>
+    </div>
+    <div class="card hm-card">
+      <div class="hm-top">
+        <span>Rows: model · Columns: opponent</span>
+        <span class="legend"><span>Loses more</span><span class="ramp" id="ramp"></span><span>Wins more</span></span>
+      </div>
+      <div class="scroll"><div class="hm" id="hm"></div></div>
+      <p class="readout" id="readout" aria-live="polite">Hover a cell to read it. Opus 5 beats every other model at least 62% of the time.</p>
+    </div>
+  </section>
+
+  <footer>Scores are PRD weighted scores; higher is better. Method: <a href="https://arxiv.org/abs/2307.02762" target="_blank" rel="noopener">PRD: Peer Rank and Discussion Improve LLM-based Evaluations</a>.</footer>
+</div>
+
+<script>
+(function () {
+  var MODELS = [
+    { key: "opus",  name: "Claude Opus 5",    short: "Opus 5",      org: "Anthropic", open: false, overall: .7879, hle: .7666, arena: .7765, eq: .8155, weight: .2804, bias: 17.9 },
+    { key: "astra", name: "GPT-6 Astra",      short: "GPT-6 Astra", org: "OpenAI",    open: false, overall: .7028, hle: .7315, arena: .7073, eq: .6757, weight: .2472, bias: 29.7 },
+    { key: "fable", name: "Claude Fable 5",   short: "Fable 5",     org: "Anthropic", open: false, overall: .6276, hle: .6829, arena: .6085, eq: .5890, weight: .2178, bias: 9.3 },
+    { key: "sol",   name: "GPT-5.6 Sol",      short: "GPT-5.6 Sol", org: "OpenAI",    open: false, overall: .5919, hle: .5677, arena: .5945, eq: .6242, weight: .2038, bias: 16.5 },
+    { key: "muse",  name: "Muse Glimmer 30B", short: "Muse 30B",    org: "Meta",      open: true,  overall: .2006, hle: .1194, arena: .2371, eq: .2346, weight: .0508, bias: 25.4 },
+    { key: "qwen",  name: "Qwen3.8-27B",      short: "Qwen 27B",    org: "Alibaba",   open: true,  overall: .0706, hle: .1026, arena: .0576, eq: .0517, weight: 0,     bias: 6.4 }
+  ];
+  // Share of comparisons the row model wins against the column model (ties = half), same order as MODELS.
+  var PAIR = [
+    [null, .6186, .7159, .7154, .9196, .9328],
+    [.3814, null, .5308, .6229, .8330, .8881],
+    [.2841, .4692, null, .5619, .8955, .9247],
+    [.2846, .3771, .4381, null, .8459, .9051],
+    [.0804, .1670, .1045, .1541, null, .7072],
+    [.0672, .1119, .0753, .0949, .2928, null]
+  ];
+  var CATS = [
+    { key: "overall", label: "Overall" },
+    { key: "hle", label: "HLE" },
+    { key: "arena", label: "Arena-Hard v2" },
+    { key: "eq", label: "EQ-Bench Creative v3" }
+  ];
+  var TYPES = [{ key: "all", label: "All" }, { key: "prop", label: "Proprietary" }, { key: "open", label: "Open weights" }];
+  var state = { cat: "overall", type: "all", sortKey: "rank", sortDir: "asc" };
+
+  function $(id) { return document.getElementById(id); }
+  function fmt(v) { return v.toFixed(2); }
+  function safe(fn) { try { return fn(); } catch (e) { return null; } }
+  function ranksFor(key) {
+    var order = MODELS.slice().sort(function (a, b) { return b[key] - a[key]; });
+    var r = {};
+    order.forEach(function (m, i) { r[m.key] = i + 1; });
+    return r;
+  }
+  var overallRank = ranksFor("overall");
+
+  function renderTabs() {
+    var el = $("tabs");
+    el.innerHTML = "";
+    CATS.forEach(function (c) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "tab";
+      b.id = "tab-" + c.key;
+      b.setAttribute("role", "tab");
+      b.setAttribute("aria-selected", String(c.key === state.cat));
+      b.textContent = c.label;
+      b.addEventListener("click", function () {
+        state.cat = c.key;
+        state.sortKey = "rank";
+        state.sortDir = "asc";
+        safe(function () { history.replaceState(null, "", "#" + c.key); });
+        render();
+      });
+      el.appendChild(b);
+    });
+    var seg = $("type-seg");
+    seg.innerHTML = "";
+    TYPES.forEach(function (t) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "chip";
+      b.id = "type-" + t.key;
+      b.setAttribute("aria-pressed", String(t.key === state.type));
+      b.textContent = t.label;
+      b.addEventListener("click", function () { state.type = t.key; render(); });
+      seg.appendChild(b);
+    });
+  }
+
+  function columns() {
+    var cols = [
+      { key: "rank", label: "Rank" },
+      { key: "name", label: "Model" },
+      { key: "org", label: "Organization" },
+      { key: "type", label: "Type" },
+      { key: "score", label: "PRD score" }
+    ];
+    if (state.cat === "overall") {
+      cols.push({ key: "weight", label: "Judge weight" });
+      cols.push({ key: "bias", label: "Self-bias" });
+    }
+    return cols;
+  }
+
+  function renderTable() {
+    var ranks = ranksFor(state.cat);
+    var cols = columns();
+    var head = $("lb-head");
+    head.innerHTML = "";
+    cols.forEach(function (c) {
+      var th = document.createElement("th");
+      th.scope = "col";
+      var active = state.sortKey === c.key;
+      if (active) th.setAttribute("aria-sort", state.sortDir === "asc" ? "ascending" : "descending");
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.id = "sort-" + c.key;
+      btn.innerHTML = c.label + (active ? ' <span class="arrow">' + (state.sortDir === "asc" ? "▲" : "▼") + "</span>" : "");
+      btn.addEventListener("click", function () {
+        if (state.sortKey === c.key) state.sortDir = state.sortDir === "asc" ? "desc" : "asc";
+        else { state.sortKey = c.key; state.sortDir = (c.key === "score" || c.key === "weight" || c.key === "bias") ? "desc" : "asc"; }
+        render();
+      });
+      th.appendChild(btn);
+      head.appendChild(th);
+    });
+
+    function val(m, k) {
+      if (k === "rank") return ranks[m.key];
+      if (k === "score") return m[state.cat];
+      if (k === "type") return m.open ? "Open weights" : "Proprietary";
+      return m[k];
+    }
+    var rows = MODELS.filter(function (m) { return state.type === "all" || (state.type === "open" ? m.open : !m.open); });
+    rows.sort(function (a, b) {
+      var va = val(a, state.sortKey), vb = val(b, state.sortKey);
+      var c = typeof va === "number" ? va - vb : String(va).localeCompare(String(vb));
+      return state.sortDir === "asc" ? c : -c;
+    });
+
+    var html = "";
+    rows.forEach(function (m) {
+      var r = ranks[m.key];
+      var s = m[state.cat];
+      var delta = "";
+      if (state.cat !== "overall") {
+        var d = overallRank[m.key] - r;
+        if (d > 0) delta = '<span class="delta up" title="Higher than its overall rank">▲' + d + "</span>";
+        if (d < 0) delta = '<span class="delta down" title="Lower than its overall rank">▼' + (-d) + "</span>";
+      }
+      html += '<tr class="' + (r === 1 ? "first" : "") + '">' +
+        '<td class="rank num"><span class="medal">' + r + "</span>" + delta + "</td>" +
+        '<td class="model">' + m.name + "</td>" +
+        '<td class="org">' + m.org + "</td>" +
+        '<td><span class="pill ' + (m.open ? "open" : "prop") + '">' + (m.open ? "Open weights" : "Proprietary") + "</span></td>" +
+        '<td><div class="scorecell"><span class="score num">' + fmt(s) + '</span><span class="track"><span class="fill' + (m.open ? " open" : "") +
+        '" style="width:' + (s * 100).toFixed(1) + '%"></span></span></div></td>';
+      if (state.cat === "overall") {
+        html += '<td class="plain num">' + fmt(m.weight) + "</td>" +
+                '<td class="plain num">+' + m.bias.toFixed(1) + " pp</td>";
+      }
+      html += "</tr>";
+    });
+    $("lb-body").innerHTML = html;
+
+    $("lb-note").textContent = state.cat === "overall"
+      ? "PRD score over all three benchmarks. Judge weight: how much PRD trusts the model as a judge (weights add up to 1). Self-bias: how much more the model likes its own answers than the other judges do."
+      : "PRD score on this benchmark. ▲▼ shows the change from the model's overall rank.";
+  }
+
+  function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+  function hexToRgb(h) { var x = h.replace("#", ""); return [0, 2, 4].map(function (i) { return parseInt(x.slice(i, i + 2), 16); }); }
+  function mix(a, b, t) { var A = hexToRgb(a), B = hexToRgb(b); return A.map(function (v, i) { return Math.round(v + (B[i] - v) * t); }); }
+  function lum(rgb) {
+    var c = rgb.map(function (v) { v /= 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); });
+    return .2126 * c[0] + .7152 * c[1] + .0722 * c[2];
+  }
+
+  function renderHeatmap() {
+    var hm = $("hm");
+    var neutral = cssVar("--neutral-cell") || "#eef1f6";
+    var hi = cssVar("--blue") || "#2f62c4";
+    var lo = cssVar("--orange") || "#c9661f";
+    var ink = cssVar("--ink") || "#141a27";
+    $("ramp").style.background = "linear-gradient(90deg," + lo + "," + neutral + "," + hi + ")";
+    hm.innerHTML = "<div></div>";
+    MODELS.forEach(function (m) { hm.insertAdjacentHTML("beforeend", '<div class="axis colh">' + m.short + "</div>"); });
+    MODELS.forEach(function (row, r) {
+      hm.insertAdjacentHTML("beforeend", '<div class="axis rowh">' + row.short + "</div>");
+      MODELS.forEach(function (col, c) {
+        var v = PAIR[r][c];
+        var cell = document.createElement("div");
+        cell.className = "cell num";
+        cell.setAttribute("data-r", r);
+        cell.setAttribute("data-c", c);
+        if (v === null) { cell.className += " diag"; cell.textContent = "–"; hm.appendChild(cell); return; }
+        var rgb = mix(neutral, v >= .5 ? hi : lo, Math.abs(v - .5) / .5);
+        cell.style.background = "rgb(" + rgb.join(",") + ")";
+        cell.style.color = lum(rgb) < .3 ? "#ffffff" : ink;
+        cell.textContent = fmt(v);
+        cell.tabIndex = 0;
+        var say = row.short + " beats " + col.short + " " + Math.round(v * 100) + "% of the time.";
+        cell.setAttribute("aria-label", say);
+        function on() {
+          hm.classList.add("dim");
+          Array.prototype.forEach.call(hm.querySelectorAll(".cell"), function (x) {
+            var hit = +x.getAttribute("data-r") === r || +x.getAttribute("data-c") === c;
+            x.classList.toggle("hl", hit);
+          });
+          $("readout").textContent = say;
+        }
+        function off() {
+          hm.classList.remove("dim");
+          Array.prototype.forEach.call(hm.querySelectorAll(".cell.hl"), function (x) { x.classList.remove("hl"); });
+        }
+        cell.addEventListener("mouseenter", on);
+        cell.addEventListener("focus", on);
+        cell.addEventListener("mouseleave", off);
+        cell.addEventListener("blur", off);
+        hm.appendChild(cell);
+      });
+    });
+  }
+
+  function render() { renderTabs(); renderTable(); }
+
+  var fromHash = (location.hash || "").replace("#", "");
+  if (CATS.some(function (c) { return c.key === fromHash; })) state.cat = fromHash;
+  render();
+  renderHeatmap();
+  safe(function () { window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", renderHeatmap); });
+  safe(function () { new MutationObserver(renderHeatmap).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] }); });
+})();
+</script>
 </body>
 </html>
