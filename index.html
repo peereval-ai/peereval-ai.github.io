@@ -139,6 +139,11 @@ tbody tr:hover td { background: var(--surface-2); }
 .fill { display: block; height: 100%; border-radius: 999px; background: var(--blue); }
 .fill.open { background: var(--orange); }
 .plain { color: var(--ink); font-weight: 500; white-space: nowrap; }
+.ub { color: var(--muted); font-weight: 600; text-align: center; width: 90px; }
+.ci { color: var(--muted); white-space: nowrap; font-size: 13px; }
+.ci-card { padding: 16px 20px; }
+#ci-svg { display: block; width: 100%; min-width: 640px; height: auto; }
+#ci-svg text { font-family: inherit; font-size: 14px; font-variant-numeric: tabular-nums; }
 .foot-note { font-size: 13px; color: var(--muted); padding: 10px 14px; border-top: 1px solid var(--line); }
 
 /* heatmap */
@@ -185,6 +190,16 @@ footer a { color: var(--blue); }
 
   <section style="display:flex;flex-direction:column;gap:12px">
     <div>
+      <h2>Confidence intervals on PRD score</h2>
+      <p class="sub" id="ci-sub"></p>
+    </div>
+    <div class="card ci-card">
+      <div class="scroll"><svg id="ci-svg" role="img" aria-label="PRD score with 95% confidence interval for each model" preserveAspectRatio="xMinYMin meet"></svg></div>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:12px">
+    <div>
       <h2>Head-to-head</h2>
       <p class="sub">How often the model on the left beats the model on top, over all three benchmarks. Ties count as half a win.</p>
     </div>
@@ -222,6 +237,8 @@ footer a { color: var(--blue); }
     [0.1416, 0.1341, 0.2118, 0.1934, 0.4155, null, 0.7423],
     [0.0667, 0.0563, 0.0736, 0.0762, 0.1327, 0.2577, null]
   ];
+  // 95% bootstrap intervals for the PRD score (1,000 resamples of questions) and Rank (UB): [low, high, rank_ub].
+  var CI = {"claude-opus-5-5":{"overall":[0.7345,0.7939,1],"hle":[0.6738,0.7958,1],"arena":[0.8108,0.8684,1],"eq":[0.6561,0.7666,1]},"glm-5.3":{"overall":[0.6922,0.7429,1],"hle":[0.6037,0.7271,1],"arena":[0.6934,0.765,2],"eq":[0.7161,0.7918,1]},"gpt-6-astra":{"overall":[0.6371,0.6867,3],"hle":[0.5479,0.6393,2],"arena":[0.5628,0.6675,3],"eq":[0.7238,0.7852,1]},"grok-4.6":{"overall":[0.3306,0.3803,5],"hle":[0.4596,0.601,3],"arena":[0.2301,0.2949,6],"eq":[0.2854,0.3397,5]},"kimi-k3":{"overall":[0.6089,0.6559,3],"hle":[0.4485,0.577,3],"arena":[0.5987,0.6885,3],"eq":[0.6894,0.7436,1]},"muse-glimmer-30b":{"overall":[0.0553,0.0779,7],"hle":[0.0768,0.1271,7],"arena":[0.0314,0.0706,7],"eq":[0.0406,0.0717,7]},"qwen3.8-27b":{"overall":[0.2569,0.3249,6],"hle":[0.2498,0.4422,6],"arena":[0.3004,0.4068,5],"eq":[0.1681,0.2151,6]}};
   var CATS = [
     { key: "overall", label: "Overall" },
     { key: "hle", label: "HLE" },
@@ -266,9 +283,11 @@ footer a { color: var(--blue); }
   function columns() {
     var cols = [
       { key: "rank", label: "Rank" },
+      { key: "ub", label: "Rank (UB)" },
       { key: "name", label: "Model" },
       { key: "org", label: "Organization" },
-      { key: "score", label: "PRD score" }
+      { key: "score", label: "PRD score" },
+      { key: "ci", label: "95% CI" }
     ];
     if (state.cat === "overall") {
       cols.push({ key: "weight", label: "Judge weight" });
@@ -303,6 +322,8 @@ footer a { color: var(--blue); }
     function val(m, k) {
       if (k === "rank") return ranks[m.key];
       if (k === "score") return m[state.cat];
+      if (k === "ub") return CI[m.key][state.cat][2];
+      if (k === "ci") return CI[m.key][state.cat][1] - CI[m.key][state.cat][0];
       return m[k];
     }
     var rows = MODELS.slice();
@@ -324,10 +345,13 @@ footer a { color: var(--blue); }
       }
       html += '<tr class="' + (r === 1 ? "first" : "") + '">' +
         '<td class="rank num"><span class="medal">' + r + "</span>" + delta + "</td>" +
+        '<td class="ub num">' + CI[m.key][state.cat][2] + "</td>" +
         '<td class="model">' + m.name + "</td>" +
         '<td class="org">' + m.org + "</td>" +
         '<td><div class="scorecell"><span class="score num">' + fmt(s) + '</span><span class="track"><span class="fill' +
-        '" style="width:' + (s * 100).toFixed(1) + '%"></span></span></div></td>';
+        '" style="width:' + (s * 100).toFixed(1) + '%"></span></span></div></td>' +
+        '<td class="ci num" title="95% interval ' + CI[m.key][state.cat][0].toFixed(3) + "–" + CI[m.key][state.cat][1].toFixed(3) + '">+' +
+        (CI[m.key][state.cat][1] - s).toFixed(3) + " / −" + (s - CI[m.key][state.cat][0]).toFixed(3) + "</td>";
       if (state.cat === "overall") {
         html += '<td class="plain num">' + fmt(m.weight) + "</td>" +
                 '<td class="plain num">+' + m.bias.toFixed(1) + " pp</td>";
@@ -337,8 +361,8 @@ footer a { color: var(--blue); }
     $("lb-body").innerHTML = html;
 
     $("lb-note").textContent = state.cat === "overall"
-      ? "PRD score over all three benchmarks. Judge weight: how much PRD trusts the model as a judge (weights add up to 1). Self-bias: how much more the model likes its own answers than the other judges do. Each model also judges pairs it appears in; every pair is judged in both display orders."
-      : "PRD score on this benchmark. ▲▼ shows the change from the model's overall rank.";
+      ? "PRD score over all three benchmarks. 95% CI: bootstrap interval over questions. Rank (UB): 1 + the number of models that are clearly better; models sharing a Rank (UB) are not clearly separated. Judge weight: how much PRD trusts the model as a judge (weights add up to 1). Self-bias: how much more the model likes its own answers than the other judges do. Each model also judges pairs it appears in; every pair is judged in both display orders."
+      : "PRD score on this benchmark. 95% CI: bootstrap interval over questions. Rank (UB): 1 + the number of models that are clearly better. ▲▼ shows the change from the model's overall rank.";
   }
 
   function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
@@ -395,7 +419,39 @@ footer a { color: var(--blue); }
     });
   }
 
-  function render() { renderTabs(); renderTable(); }
+  function renderCI() {
+    var svg = $("ci-svg");
+    var rows = MODELS.slice().sort(function (a, b) { return b[state.cat] - a[state.cat]; });
+    var L = 170, R = 120, W = 900, top = 34, rowH = 44, H = top + rows.length * rowH + 8;
+    var los = rows.map(function (m) { return CI[m.key][state.cat][0]; });
+    var his = rows.map(function (m) { return CI[m.key][state.cat][1]; });
+    var x0 = Math.max(0, Math.floor((Math.min.apply(null, los) - 0.02) * 10) / 10);
+    var x1 = Math.min(1, Math.ceil((Math.max.apply(null, his) + 0.02) * 10) / 10);
+    function X(v) { return L + (v - x0) / (x1 - x0) * (W - L - R); }
+    var out = [];
+    for (var t = x0; t <= x1 + 1e-9; t += 0.1) {
+      var tx = X(t).toFixed(1);
+      out.push('<line x1="' + tx + '" x2="' + tx + '" y1="' + (top - 8) + '" y2="' + (H - 4) + '" style="stroke:var(--line)"/>');
+      out.push('<text x="' + tx + '" y="' + (top - 14) + '" text-anchor="middle" style="fill:var(--muted)">' + t.toFixed(1) + "</text>");
+    }
+    rows.forEach(function (m, i) {
+      var c = CI[m.key][state.cat], y = top + i * rowH + rowH / 2, s = m[state.cat];
+      var tip = m.name + ": " + s.toFixed(3) + " (95% CI " + c[0].toFixed(3) + "–" + c[1].toFixed(3) + ")";
+      out.push('<g><title>' + tip + "</title>" +
+        '<text x="' + (L - 14) + '" y="' + (y + 4) + '" text-anchor="end" style="fill:var(--ink);font-weight:600">' + m.name + "</text>" +
+        '<line x1="' + X(c[0]).toFixed(1) + '" x2="' + X(c[1]).toFixed(1) + '" y1="' + y + '" y2="' + y + '" style="stroke:var(--blue);stroke-width:3;stroke-linecap:round"/>' +
+        '<line x1="' + X(c[0]).toFixed(1) + '" x2="' + X(c[0]).toFixed(1) + '" y1="' + (y - 7) + '" y2="' + (y + 7) + '" style="stroke:var(--blue);stroke-width:2"/>' +
+        '<line x1="' + X(c[1]).toFixed(1) + '" x2="' + X(c[1]).toFixed(1) + '" y1="' + (y - 7) + '" y2="' + (y + 7) + '" style="stroke:var(--blue);stroke-width:2"/>' +
+        '<circle cx="' + X(s).toFixed(1) + '" cy="' + y + '" r="6" style="fill:var(--blue);stroke:var(--surface);stroke-width:2"/>' +
+        '<text x="' + (W - R + 14) + '" y="' + (y + 4) + '" style="fill:var(--muted)">' + s.toFixed(3) + "</text></g>");
+    });
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    svg.innerHTML = out.join("");
+    var label = CATS.filter(function (c) { return c.key === state.cat; })[0].label;
+    $("ci-sub").textContent = label + ": PRD score (dot) with its 95% bootstrap interval (line), from 1,000 resamples of the questions. Overlapping lines mean the models are not clearly separated.";
+  }
+
+  function render() { renderTabs(); renderTable(); renderCI(); }
 
   var fromHash = (location.hash || "").replace("#", "");
   if (CATS.some(function (c) { return c.key === fromHash; })) state.cat = fromHash;
