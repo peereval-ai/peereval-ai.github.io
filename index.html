@@ -133,6 +133,8 @@ tbody tr:hover td { background: var(--surface-2); }
 .ub { color: var(--muted); text-align: center; width: 84px; }
 .model { font-weight: 600; color: var(--ink); white-space: nowrap; }
 .org { color: var(--muted); white-space: nowrap; }
+.org a { color: inherit; text-decoration: none; border-bottom: 1px solid var(--line-strong); }
+.org a:hover { color: var(--ink); border-bottom-color: var(--ink); }
 .scorecell { display: flex; align-items: baseline; gap: 8px; white-space: nowrap; }
 .score { color: var(--ink); font-size: 14px; font-weight: 500; }
 .ci { color: var(--muted); white-space: nowrap; font-size: 12px; }
@@ -238,6 +240,15 @@ footer a { color: var(--blue); }
   ];
   // 95% bootstrap intervals for the PRD score (1,000 resamples of questions) and Rank (UB): [low, high, rank_ub].
   var CI = {"claude-opus-5-5":{"overall":[0.7345,0.7939,1],"hle":[0.6738,0.7958,1],"arena":[0.8108,0.8684,1],"eq":[0.6561,0.7666,1]},"glm-5.3":{"overall":[0.6922,0.7429,1],"hle":[0.6037,0.7271,1],"arena":[0.6934,0.765,2],"eq":[0.7161,0.7918,1]},"gpt-6-astra":{"overall":[0.6371,0.6867,3],"hle":[0.5479,0.6393,2],"arena":[0.5628,0.6675,3],"eq":[0.7238,0.7852,1]},"grok-4.6":{"overall":[0.3306,0.3803,5],"hle":[0.4596,0.601,3],"arena":[0.2301,0.2949,6],"eq":[0.2854,0.3397,5]},"kimi-k3":{"overall":[0.6089,0.6559,3],"hle":[0.4485,0.577,3],"arena":[0.5987,0.6885,3],"eq":[0.6894,0.7436,1]},"muse-glimmer-30b":{"overall":[0.0553,0.0779,7],"hle":[0.0768,0.1271,7],"arena":[0.0314,0.0706,7],"eq":[0.0406,0.0717,7]},"qwen3.8-27b":{"overall":[0.2569,0.3249,6],"hle":[0.2498,0.4422,6],"arena":[0.3004,0.4068,5],"eq":[0.1681,0.2151,6]}};
+  var ORG_URL = {
+    "Anthropic": "https://www.anthropic.com",
+    "OpenAI": "https://openai.com",
+    "Zhipu AI": "https://www.zhipuai.cn",
+    "Moonshot AI": "https://www.moonshot.ai",
+    "xAI": "https://x.ai",
+    "Alibaba": "https://www.alibabacloud.com",
+    "Meta": "https://ai.meta.com"
+  };
   var CATS = [
     { key: "overall", label: "Overall" },
     { key: "hle", label: "HLE" },
@@ -346,7 +357,7 @@ footer a { color: var(--blue); }
         '<td class="rank num"><span class="medal">' + r + "</span>" + delta + "</td>" +
         '<td class="ub num">' + CI[m.key][state.cat][2] + "</td>" +
         '<td class="model">' + m.name + "</td>" +
-        '<td class="org">' + m.org + "</td>" +
+        '<td class="org">' + (ORG_URL[m.org] ? '<a href="' + ORG_URL[m.org] + '" target="_blank" rel="noopener">' + m.org + "</a>" : m.org) + "</td>" +
         '<td><span class="score num">' + s.toFixed(3) + "</span></td>" +
         '<td class="ci num" title="95% interval ' + CI[m.key][state.cat][0].toFixed(3) + "–" + CI[m.key][state.cat][1].toFixed(3) + '">+' +
         (CI[m.key][state.cat][1] - s).toFixed(3) + " / −" + (s - CI[m.key][state.cat][0]).toFixed(3) + "</td>";
