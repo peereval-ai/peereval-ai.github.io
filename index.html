@@ -138,6 +138,7 @@ tbody tr:hover td { background: var(--surface-2); }
 .scorecell { display: flex; align-items: baseline; gap: 8px; white-space: nowrap; }
 .score { color: var(--ink); font-size: 14px; font-weight: 500; }
 .ci { color: var(--muted); white-space: nowrap; font-size: 12px; }
+.elo { white-space: nowrap; }
 .plain { color: var(--body); white-space: nowrap; }
 .foot-note { font-size: 12px; color: var(--muted); padding: 10px 14px; border-top: 1px solid var(--line); }
 
@@ -249,6 +250,8 @@ footer a { color: var(--blue); }
     "Alibaba": "https://www.alibabacloud.com",
     "Meta": "https://ai.meta.com"
   };
+  // Elo-scale Bradley-Terry ratings: [elo, 95% CI low, high]; elo = 1000 + 400 * log-strength / ln(10).
+  var ELO = {"claude-opus-5-5":{"overall":[1123,1101,1141],"hle":[1116,1075,1153],"arena":[1180,1157,1202],"eq":[1062,1017,1098]},"glm-5.3":{"overall":[1100,1081,1118],"hle":[1084,1040,1121],"arena":[1087,1058,1117],"eq":[1110,1082,1134]},"gpt-6-astra":{"overall":[1040,1022,1058],"hle":[1011,982,1037],"arena":[988,947,1026],"eq":[1096,1068,1120]},"grok-4.6":{"overall":[836,812,858],"hle":[987,937,1027],"arena":[698,639,747],"eq":[754,705,800]},"kimi-k3":{"overall":[1026,1008,1043],"hle":[966,923,1006],"arena":[1010,972,1042],"eq":[1075,1052,1098]},"muse-glimmer-30b":{"overall":[585,560,609],"hle":[692,652,721],"arena":[473,409,527],"eq":[496,435,549]},"qwen3.8-27b":{"overall":[785,749,819],"hle":[860,781,930],"arena":[798,740,853],"eq":[620,564,669]}};
   var CATS = [
     { key: "overall", label: "Overall" },
     { key: "hle", label: "HLE" },
@@ -297,7 +300,8 @@ footer a { color: var(--blue); }
       { key: "name", label: "Model" },
       { key: "org", label: "Organization" },
       { key: "score", label: "PRD score" },
-      { key: "ci", label: "95% CI" }
+      { key: "ci", label: "95% CI" },
+      { key: "elo", label: "Elo" }
     ];
     if (state.cat === "overall") {
       cols.push({ key: "weight", label: "Judge weight" });
@@ -322,7 +326,7 @@ footer a { color: var(--blue); }
       btn.innerHTML = c.label + (active ? ' <span class="arrow">' + (state.sortDir === "asc" ? "▲" : "▼") + "</span>" : "");
       btn.addEventListener("click", function () {
         if (state.sortKey === c.key) state.sortDir = state.sortDir === "asc" ? "desc" : "asc";
-        else { state.sortKey = c.key; state.sortDir = (c.key === "score" || c.key === "weight" || c.key === "bias") ? "desc" : "asc"; }
+        else { state.sortKey = c.key; state.sortDir = (c.key === "score" || c.key === "elo" || c.key === "weight" || c.key === "bias") ? "desc" : "asc"; }
         render();
       });
       th.appendChild(btn);
@@ -334,6 +338,7 @@ footer a { color: var(--blue); }
       if (k === "score") return m[state.cat];
       if (k === "ub") return CI[m.key][state.cat][2];
       if (k === "ci") return CI[m.key][state.cat][1] - CI[m.key][state.cat][0];
+      if (k === "elo") return ELO[m.key][state.cat][0];
       return m[k];
     }
     var rows = MODELS.slice();
@@ -360,7 +365,9 @@ footer a { color: var(--blue); }
         '<td class="org">' + (ORG_URL[m.org] ? '<a href="' + ORG_URL[m.org] + '" target="_blank" rel="noopener">' + m.org + "</a>" : m.org) + "</td>" +
         '<td><span class="score num">' + s.toFixed(3) + "</span></td>" +
         '<td class="ci num" title="95% interval ' + CI[m.key][state.cat][0].toFixed(3) + "–" + CI[m.key][state.cat][1].toFixed(3) + '">+' +
-        (CI[m.key][state.cat][1] - s).toFixed(3) + " / −" + (s - CI[m.key][state.cat][0]).toFixed(3) + "</td>";
+        (CI[m.key][state.cat][1] - s).toFixed(3) + " / −" + (s - CI[m.key][state.cat][0]).toFixed(3) + "</td>" +
+        '<td class="elo num" title="95% interval ' + ELO[m.key][state.cat][1] + "–" + ELO[m.key][state.cat][2] + '"><span class="score">' +
+        ELO[m.key][state.cat][0] + '</span> <span class="ci">' + ELO[m.key][state.cat][1] + "–" + ELO[m.key][state.cat][2] + "</span></td>";
       if (state.cat === "overall") {
         html += '<td class="plain num">' + fmt(m.weight) + "</td>" +
                 '<td class="plain num">+' + m.bias.toFixed(1) + " pp</td>";
@@ -370,8 +377,8 @@ footer a { color: var(--blue); }
     $("lb-body").innerHTML = html;
 
     $("lb-note").textContent = state.cat === "overall"
-      ? "PRD score over all three benchmarks. 95% CI: bootstrap interval over questions. Rank (UB): 1 + the number of models that are clearly better; models sharing a Rank (UB) are not clearly separated. Judge weight: how much PRD trusts the model as a judge (weights add up to 1). Self-bias: how much more the model likes its own answers than the other judges do. Each model also judges pairs it appears in; every pair is judged in both display orders."
-      : "PRD score on this benchmark. 95% CI: bootstrap interval over questions. Rank (UB): 1 + the number of models that are clearly better. ▲▼ shows the change from the model's overall rank.";
+      ? "PRD score over all three benchmarks. 95% CI: bootstrap interval over questions. Elo: Bradley-Terry rating on the Elo scale (100 points ≈ 64% expected win rate), with its 95% interval; only differences between models are meaningful. Rank (UB): 1 + the number of models that are clearly better; models sharing a Rank (UB) are not clearly separated. Judge weight: how much PRD trusts the model as a judge (weights add up to 1). Self-bias: how much more the model likes its own answers than the other judges do. Each model also judges pairs it appears in; every pair is judged in both display orders."
+      : "PRD score on this benchmark. 95% CI: bootstrap interval over questions. Elo: Bradley-Terry rating on the Elo scale, with its 95% interval. Rank (UB): 1 + the number of models that are clearly better. ▲▼ shows the change from the model's overall rank.";
   }
 
   function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
