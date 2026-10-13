@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PeerEval: Ranking LLMs by Peer Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&display=swap">
+<style>
+:root {
+  --ground: #fcfaf7;
+  --surface: #ffffff;
+  --surface-2: #f6f2ec;
+  --ink: #2e2b29;
+  --body: #423d39;
+  --muted: #7a7169;
+  --line: #ece8e3;
+  --line-strong: #ddd6ce;
+  --blue: #2a7fd4;
+  --orange: #d0702c;
+  --gold: #f2a20d;
+  --gold-ink: #3a2a05;
+  --note: #fff6e3;
+  --note-line: #f0d9a8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --ground: #242422;
+    --surface: #2c2b28;
+    --surface-2: #34322e;
+    --ink: #f4efe8;
+    --body: #e1dad0;
+    --muted: #8f877e;
+    --line: #3d3a35;
+    --line-strong: #4d4842;
+    --blue: #4ea3f2;
+    --orange: #ee9150;
+    --gold: #f2a20d;
+    --gold-ink: #2a1e03;
+    --note: #3a3226;
+    --note-line: #5a4a2c;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ground: #242422;
+  --surface: #2c2b28;
+  --surface-2: #34322e;
+  --ink: #f4efe8;
+  --body: #e1dad0;
+  --muted: #8f877e;
+  --line: #3d3a35;
+  --line-strong: #4d4842;
+  --blue: #4ea3f2;
+  --orange: #ee9150;
+  --gold: #f2a20d;
+  --gold-ink: #2a1e03;
+  --note: #3a3226;
+  --note-line: #5a4a2c;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--body);
+  font: 17px/1.7 "Source Serif 4", Georgia, serif;
+  padding-inline: 20px;
+  padding-block: 0 72px;
+  -webkit-font-smoothing: antialiased;
+}
+nav.top {
+  max-width: 1080px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between;
+  padding-block: 18px; border-bottom: 1px solid var(--line);
+  font: 500 14px/1 Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+nav.top .brand { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: -.01em; }
+nav.top .links { display: flex; gap: 18px; }
+nav.top .links a { color: var(--muted); text-decoration: none; }
+nav.top .links a:hover, nav.top .links a[aria-current="page"] { color: var(--ink); }
+article { max-width: 720px; margin: 0 auto; padding-top: 48px; }
+h1, h2, h3 { color: var(--ink); font-family: "Source Serif 4", Georgia, serif; text-wrap: balance; }
+h1 { font-size: clamp(32px, 5vw, 46px); line-height: 1.1; font-weight: 500; letter-spacing: -.015em; margin: 0 0 14px; }
+h2 { font-size: 27px; line-height: 1.25; font-weight: 500; margin: 52px 0 12px; letter-spacing: -.01em; }
+h3 { font-size: 19px; font-weight: 600; margin: 30px 0 8px; }
+p, ul, ol { margin: 0 0 16px; }
+li { margin-bottom: 6px; }
+a { color: var(--blue); }
+strong { color: var(--ink); font-weight: 600; }
+.meta { font: 14px/1.5 Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: var(--muted); margin-bottom: 30px; }
+.lede { font-size: 20px; line-height: 1.6; color: var(--ink); }
+.tldr {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px 22px; margin: 26px 0 8px;
+  font: 15px/1.6 Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+.tldr b { color: var(--ink); }
+.tldr ul { margin: 8px 0 0; padding-left: 20px; }
+.ui, table, figcaption, .callout, code, pre { font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+code { font-family: "DM Mono", ui-monospace, Menlo, Consolas, monospace; font-size: .86em; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; }
+pre { font-family: "DM Mono", ui-monospace, Menlo, Consolas, monospace; font-size: 13.5px; line-height: 1.55; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; overflow-x: auto; color: var(--ink); }
+pre code { background: none; padding: 0; font-size: inherit; }
+.num { font-family: "DM Mono", ui-monospace, Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; }
+figure { margin: 26px 0; }
+figcaption { font-size: 13px; color: var(--muted); margin-top: 8px; line-height: 1.5; }
+.scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+th { text-align: left; font-weight: 500; color: var(--muted); font-size: 12px; padding: 9px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 9px 12px; border-bottom: 1px solid var(--line); color: var(--body); white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+td.r, th.r { text-align: right; }
+td.c, th.c { text-align: center; }
+.first { display: inline-grid; place-items: center; min-width: 22px; height: 22px; border-radius: 5px; background: var(--gold); color: var(--gold-ink); }
+.callout { background: var(--note); border: 1px solid var(--note-line); border-radius: 12px; padding: 16px 20px; font-size: 15px; line-height: 1.6; color: var(--ink); }
+.callout b { display: block; margin-bottom: 4px; }
+.example { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; font: 14px/1.6 Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+.example .label { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.example .block { border-left: 3px solid var(--line-strong); padding: 2px 0 2px 12px; margin: 0 0 14px; color: var(--body); }
+.example .verdict { border-left-color: var(--gold); color: var(--ink); }
+.bars { display: grid; grid-template-columns: 150px 1fr 70px; gap: 8px 12px; align-items: center; font: 14px/1.3 Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; }
+.bars .name { color: var(--ink); font-weight: 500; }
+.bars .track { height: 10px; background: var(--surface-2); border-radius: 999px; overflow: hidden; }
+.bars .fill { display: block; height: 100%; border-radius: 999px; background: var(--ink); }
+.bars .val { text-align: right; color: var(--muted); }
+svg text { font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+.formula { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px 12px; color: var(--ink); overflow-x: auto; }
+.formula math { font-family: "STIX Two Math", "Cambria Math", "Latin Modern Math", "Source Serif 4", serif; font-size: 20px; margin: 6px 0 12px; }
+.formula .where { font: 14px/1.55 Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: var(--body); margin: 6px 0 2px; padding-left: 20px; }
+.formula .where li { margin-bottom: 4px; }
+.formula + p, p + .formula { margin-top: 0; }
+.formula { margin-bottom: 18px; }
+@media (max-width: 560px) { .bars { grid-template-columns: 110px 1fr 58px; } body { font-size: 16px; } }
+</style>
+</head>
+<body>
+<nav class="top">
+  <a class="brand" href="./">PeerEval</a>
+  <div class="links"><a href="./">Leaderboard</a><a href="blog.html" aria-current="page">Blog</a></div>
+</nav>
+
+<article>
+  <h1>PeerEval: Ranking Language Models by Peer Review</h1>
+  <p class="meta">October 2026 · Liqiang Jing</p>
+
+  <p class="lede">What if the models being evaluated were also the evaluators? PeerEval has every model answer the same questions, then has every model judge anonymous pairs of answers, and turns all of those verdicts into a leaderboard, weighting each judge by how well its own answers are rated by its peers.</p>
+
+  <div class="tldr">
+    <b>In short</b>
+    <ul>
+      <li>Every model is both a <b>contestant</b> and a <b>judge</b>. Judges never see who wrote an answer, and every pair is judged in both display orders.</li>
+      <li>Verdicts are combined with <b>PRD Peer Rank</b>, which gives more weight to judges whose own answers are rated highly, and are reported with 95% bootstrap confidence intervals and Elo-scale ratings.</li>
+      <li>First release: 7 models, 3 benchmarks, 137 questions, 40,156 pairwise judgments. <a href="./">See the leaderboard.</a></li>
+      <li>Judges are biased: every model favors its own answers, by up to 36 percentage points. Peer weighting reduces the influence of the least reliable judges.</li>
+      <li>The method is available as an open-source package: <code>pip install peereval</code>.</li>
+    </ul>
+  </div>
+
+  <h2>Why peer evaluation?</h2>
+  <p>Open-ended tasks, such as answering a hard user request or writing a story, have no single correct answer, so they are usually evaluated in one of two ways. <strong>Human preference</strong>, as in Arena, is the gold standard but slow and expensive. <strong>An LLM judge</strong> is fast and cheap, but a single judge brings its own taste and biases into the ranking. Arena recently reported that frontier judges <a href="https://arena.ai/blog/llm-judge-self-preference" target="_blank" rel="noopener">pick their own answers far more often than humans do</a>. Some leaderboards instead use a small fixed panel of frontier judges; Artificial Analysis's GDPval-AA, for example, uses three.</p>
+  <p>PeerEval takes the panel idea to its end. Every model being ranked also sits on the panel, so no single company's model decides the result. That raises an obvious question, which is how much to trust each judge. PeerEval's answer is to let the data decide: a judge earns influence through the quality of its own answers, as rated by everyone else.</p>
+
+  <h2>How it works</h2>
+
+  <figure>
+    <div class="scroll">
+    <svg viewBox="0 0 720 196" width="100%" role="img" aria-label="Pipeline: models answer questions; every model judges every anonymous pair in both orders; PRD Peer Rank combines verdicts into a leaderboard with confidence intervals.">
+      <g style="fill:var(--surface);stroke:var(--line-strong)">
+        <rect x="6" y="40" width="160" height="104" rx="12"/>
+        <rect x="200" y="40" width="200" height="104" rx="12"/>
+        <rect x="434" y="40" width="130" height="104" rx="12"/>
+        <rect x="598" y="40" width="116" height="104" rx="12"/>
+      </g>
+      <g style="fill:var(--ink)" font-size="14" font-weight="600">
+        <text x="86" y="68" text-anchor="middle">1  Answer</text>
+        <text x="300" y="68" text-anchor="middle">2  Judge</text>
+        <text x="499" y="68" text-anchor="middle">3  Rank</text>
+        <text x="656" y="68" text-anchor="middle">4  Report</text>
+      </g>
+      <g style="fill:var(--muted)" font-size="12.5">
+        <text x="86" y="94" text-anchor="middle">Every model answers</text>
+        <text x="86" y="112" text-anchor="middle">every question</text>
+        <text x="300" y="94" text-anchor="middle">Every model compares every</text>
+        <text x="300" y="112" text-anchor="middle">anonymous pair, A/B and B/A</text>
+        <text x="499" y="94" text-anchor="middle">PRD Peer Rank</text>
+        <text x="499" y="112" text-anchor="middle">weights the judges</text>
+        <text x="656" y="94" text-anchor="middle">Scores, 95% CI,</text>
+        <text x="656" y="112" text-anchor="middle">Elo, Rank (UB)</text>
+      </g>
+      <g style="stroke:var(--muted);fill:none" stroke-width="1.6">
+        <path d="M168 92 H196"/><path d="M402 92 H430"/><path d="M566 92 H594"/>
+      </g>
+      <g style="fill:var(--muted)">
+        <path d="M196 87 L202 92 L196 97 Z"/><path d="M430 87 L436 92 L430 97 Z"/><path d="M594 87 L600 92 L594 97 Z"/>
+      </g>
+      <path d="M520 146 C520 176 478 176 478 146" style="stroke:var(--gold);fill:none" stroke-width="1.6"/>
+      <text x="499" y="188" text-anchor="middle" font-size="12" style="fill:var(--muted)">repeat until weights converge</text>
+    </svg>
+    </div>
+  </figure>
+
+  <h3>1. Answer</h3>
+  <p>Every model answers the same fixed set of questions with the same prompt and no system prompt. Only the final answer is kept: hidden reasoning is never shown to the judges.</p>
+
+  <h3>2. Judge</h3>
+  <p>For each question, every pair of answers is shown to every model, which picks the better one or calls a tie and returns a short JSON verdict. The judge is told the answers are anonymous and is not told which models wrote them. Each pair is judged twice, once in each display order, so a judge's preference for whichever answer comes first cancels out.</p>
+
+  <div class="example">
+    <div class="label">Question (Arena-Hard v2)</div>
+    <div class="block">GNU make says "warning: ignoring prerequisites on suffix rule definition" for my Makefile. How do I change it so that I don't get that warning but I can still say that files with some suffix .t have a dependency on a given file called FILE? …</div>
+    <div class="label">Response A (anonymous)</div>
+    <div class="block">Replace the suffix rule with a GNU make <b>pattern rule</b>. Pattern rules can have extra prerequisites: <code>%.inc: %.t FILE</code> … (The recipe line must start with a tab, not spaces.) …</div>
+    <div class="label">Response B (anonymous)</div>
+    <div class="block">The warning happens because a target with two suffixes (<code>.t.inc</code>) is parsed as an old-style suffix rule, and suffix rules can't have prerequisites … Use a pattern rule instead: <code>%.inc: %.t FILE</code> …</div>
+    <div class="label">Verdict</div>
+    <div class="block verdict"><code>{"winner": "A", "confidence": 0.64}</code><br>"Both give the correct pattern rule and explain the automatic variables clearly. A is slightly more complete: it notes the required recipe tab and provides a portable alternative. B's suggestion to delete suffix declarations could break other suffix rules in the Makefile."</div>
+  </div>
+  <figcaption>A real verdict from the first release. Behind the scenes: A was Claude Opus 5.5, B was GLM-5.3, and the judge was GPT-6 Astra; none of this was visible to the judge.</figcaption>
+
+  <h3>3. Rank with PRD Peer Rank</h3>
+  <p>Counting wins treats every judge equally. PRD Peer Rank (<a href="https://arxiv.org/abs/2307.02762" target="_blank" rel="noopener">Li et al., 2023</a>) instead assumes that <strong>a model that gives better answers is also a better judge</strong>, and lets each judge's influence follow from its own results:</p>
+  <ol>
+    <li>All judges start with equal weight.</li>
+    <li>A model's score is the weighted average, over judges, of how often each judge picks it.</li>
+    <li>Each model is also a judge: its score, scaled to 0–1 and normalized across judges, becomes its new judge weight.</li>
+    <li>Steps 2 and 3 repeat until the weights stop changing.</li>
+  </ol>
+  <p><strong>Scoring a model (step 2).</strong> A model's score is a weighted average of what each judge thinks of it:</p>
+  <div class="formula">
+    <math display="block">
+      <mrow>
+        <mi>s</mi><mo>(</mo><mi>m</mi><mo>)</mo><mo>=</mo>
+        <mfrac>
+          <mrow><munder><mo>&#x2211;</mo><mi>j</mi></munder><msub><mi>w</mi><mi>j</mi></msub><mspace width="0.2em"/><msub><mi>p</mi><mi>j</mi></msub><mo>(</mo><mi>m</mi><mo>)</mo></mrow>
+          <mrow><munder><mo>&#x2211;</mo><mi>j</mi></munder><msub><mi>w</mi><mi>j</mi></msub></mrow>
+        </mfrac>
+      </mrow>
+    </math>
+    <ul class="where">
+      <li><i>p<sub>j</sub></i>(<i>m</i>): among all comparisons involving model <i>m</i> that judge <i>j</i> decided, the share where <i>j</i> picked <i>m</i> (a tie counts as half). This is judge <i>j</i>'s opinion of <i>m</i>.</li>
+      <li><i>w<sub>j</sub></i>: the weight of judge <i>j</i>, i.e. how much its opinion counts.</li>
+      <li><i>s</i>(<i>m</i>): the result, between 0 and 1. A judge with twice the weight counts twice as much; with equal weights this is just the average of the judges' opinions.</li>
+    </ul>
+  </div>
+
+  <p><strong>Updating the judge weights (step 3).</strong> Every model is also a judge, so its score as a contestant sets its weight as a judge. The scores are first rescaled so the best model gets 1 and the worst gets 0, and then divided by their total so that all weights add up to 1:</p>
+  <div class="formula">
+    <math display="block">
+      <mrow>
+        <msub><mover><mi>s</mi><mo>~</mo></mover><mi>j</mi></msub><mo>=</mo>
+        <mfrac>
+          <mrow><mi>s</mi><mo>(</mo><mi>j</mi><mo>)</mo><mo>&#x2212;</mo><munder><mi>min</mi><mi>k</mi></munder><mi>s</mi><mo>(</mo><mi>k</mi><mo>)</mo></mrow>
+          <mrow><munder><mi>max</mi><mi>k</mi></munder><mi>s</mi><mo>(</mo><mi>k</mi><mo>)</mo><mo>&#x2212;</mo><munder><mi>min</mi><mi>k</mi></munder><mi>s</mi><mo>(</mo><mi>k</mi><mo>)</mo></mrow>
+        </mfrac>
+        <mo>,</mo><mspace width="1.4em"/>
+        <msub><mi>w</mi><mi>j</mi></msub><mo>=</mo>
+        <mfrac>
+          <msub><mover><mi>s</mi><mo>~</mo></mover><mi>j</mi></msub>
+          <mrow><munder><mo>&#x2211;</mo><mi>k</mi></munder><msub><mover><mi>s</mi><mo>~</mo></mover><mi>k</mi></msub></mrow>
+        </mfrac>
+      </mrow>
+    </math>
+    <ul class="where">
+      <li><i>s̃<sub>j</sub></i>: judge <i>j</i>'s own score, rescaled to the range 0–1 (the min and max are taken over all models <i>k</i>).</li>
+      <li><i>w<sub>j</sub></i>: its share of the total, which becomes judge <i>j</i>'s new weight.</li>
+    </ul>
+  </div>
+  <p style="margin-top:16px">With the new weights, the scores are recomputed (step 2), which gives new weights again (step 3), and so on until nothing changes. In practice this takes about ten rounds. In our data, the final weights range from 0.23 for Claude Opus 5.5, the strongest model, down to 0 for Muse Glimmer 30B: because of the 0–1 rescaling, the lowest-scoring model always ends with a judge weight of zero, so its votes no longer affect the ranking.</p>
+
+  <h3>4. Report uncertainty</h3>
+  <ul>
+    <li><strong>95% confidence intervals.</strong> We resample the questions with replacement 1,000 times (within each benchmark) and recompute every score; the interval covers the middle 95%.</li>
+    <li><strong>Rank (UB).</strong> 1 + the number of models whose interval lies entirely above a model's interval. Models that share a Rank (UB) are not clearly separated.</li>
+    <li><strong>Elo.</strong> A Bradley-Terry model fitted to the same verdicts, shown on the Elo scale: a 100-point gap means the higher model is expected to win about 64% of comparisons.</li>
+  </ul>
+
+  <h2>Benchmarks</h2>
+  <p>Peer review is most useful where there is no answer key, so the leaderboard focuses on open-ended tasks that are normally graded by a judge. The first release uses three benchmarks, 50 questions each (sampled with a fixed seed), covering 137 questions that every model answered validly:</p>
+  <div class="scroll">
+  <table>
+    <thead><tr><th>Benchmark</th><th>What it tests</th><th>Answer key?</th><th class="r">Questions</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Arena-Hard v2</strong></td><td>Hard, real user requests: coding, writing, analysis</td><td>No</td><td class="r num">48</td></tr>
+      <tr><td><strong>EQ-Bench Creative Writing v3</strong></td><td>Long-form creative writing under constraints</td><td>No</td><td class="r num">50</td></tr>
+      <tr><td><strong>Humanity's Last Exam</strong></td><td>Expert-level reasoning and knowledge</td><td>Yes</td><td class="r num">39</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p style="margin-top:16px">Humanity's Last Exam is the one benchmark with an answer key. We keep it because it lets us check whether judges can still recognize the correct answer on hard, objective questions.</p>
+
+  <h2>The leaderboard</h2>
+  <p>Seven models took part in the first release, each as contestant and judge. Overall results across all three benchmarks:</p>
+  <div class="scroll">
+  <table>
+    <thead><tr><th class="c">Rank</th><th>Model</th><th class="r">PRD score</th><th>95% CI</th><th class="c">Rank (UB)</th><th class="r">Elo</th><th class="r">Unweighted win rate</th><th class="r">Judge weight</th></tr></thead>
+    <tbody>
+      <tr><td class="c"><span class="first num">1</span></td><td><strong>Claude Opus 5.5</strong></td><td class="r num">0.767</td><td class="num">0.734–0.794</td><td class="c num">1</td><td class="r num">1123</td><td class="r num">0.742</td><td class="r num">0.231</td></tr>
+      <tr><td class="c num">2</td><td><strong>GLM-5.3</strong></td><td class="r num">0.719</td><td class="num">0.692–0.743</td><td class="c num">1</td><td class="r num">1100</td><td class="r num">0.715</td><td class="r num">0.215</td></tr>
+      <tr><td class="c num">3</td><td><strong>GPT-6 Astra</strong></td><td class="r num">0.662</td><td class="num">0.637–0.687</td><td class="c num">3</td><td class="r num">1040</td><td class="r num">0.637</td><td class="r num">0.197</td></tr>
+      <tr><td class="c num">4</td><td><strong>Kimi K3</strong></td><td class="r num">0.633</td><td class="num">0.609–0.656</td><td class="c num">3</td><td class="r num">1026</td><td class="r num">0.619</td><td class="r num">0.187</td></tr>
+      <tr><td class="c num">5</td><td><strong>Grok 4.6</strong></td><td class="r num">0.356</td><td class="num">0.331–0.380</td><td class="c num">5</td><td class="r num">836</td><td class="r num">0.367</td><td class="r num">0.096</td></tr>
+      <tr><td class="c num">6</td><td><strong>Qwen3.8-27B</strong></td><td class="r num">0.291</td><td class="num">0.257–0.325</td><td class="c num">6</td><td class="r num">785</td><td class="r num">0.306</td><td class="r num">0.074</td></tr>
+      <tr><td class="c num">7</td><td><strong>Muse Glimmer 30B</strong></td><td class="r num">0.066</td><td class="num">0.055–0.078</td><td class="c num">7</td><td class="r num">585</td><td class="r num">0.111</td><td class="r num">0.000</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <ul style="margin-top:16px">
+    <li><strong>Two clear tiers.</strong> Claude Opus 5.5 and GLM-5.3 share Rank (UB) 1, and GPT-6 Astra and Kimi K3 share Rank (UB) 3: within each pair, the gap is inside the uncertainty of 137 questions.</li>
+    <li><strong>The method does not drive the ranking.</strong> PRD score, unweighted win rate and Elo give the same order. PRD mainly changes how much each judge counts, not who wins.</li>
+    <li><strong>Rankings shift by task.</strong> Opus 5.5 leads on Arena-Hard v2 and Humanity's Last Exam, while GLM-5.3 and GPT-6 Astra are essentially tied at the top of creative writing. Per-benchmark tables are on the <a href="./">leaderboard</a>.</li>
+  </ul>
+
+  <h2>Meta-evaluation: can peer review be trusted?</h2>
+  <div class="callout"><b>[To be added]</b>Meta-evaluation results: agreement of the peer ranking and of individual judges with human preferences and with answer keys, and whether PRD weighting moves the consensus closer to them.</div>
+
+  <h2>What we learned about the judges</h2>
+
+  <h3>Every model favors its own answers</h3>
+  <p>Self-bias compares how often a model prefers its own answer when it is the judge with how often the other judges prefer that same model, in percentage points. Every model is positive:</p>
+  <figure>
+    <div class="bars" role="img" aria-label="Self-bias in percentage points per model">
+      <span class="name">GPT-6 Astra</span><span class="track"><span class="fill" style="width:89%"></span></span><span class="val num">+35.6</span>
+      <span class="name">Muse Glimmer 30B</span><span class="track"><span class="fill" style="width:69%"></span></span><span class="val num">+27.7</span>
+      <span class="name">Claude Opus 5.5</span><span class="track"><span class="fill" style="width:35%"></span></span><span class="val num">+14.0</span>
+      <span class="name">GLM-5.3</span><span class="track"><span class="fill" style="width:28%"></span></span><span class="val num">+11.3</span>
+      <span class="name">Kimi K3</span><span class="track"><span class="fill" style="width:13%"></span></span><span class="val num">+5.2</span>
+      <span class="name">Grok 4.6</span><span class="track"><span class="fill" style="width:12.5%"></span></span><span class="val num">+5.0</span>
+      <span class="name">Qwen3.8-27B</span><span class="track"><span class="fill" style="width:8%"></span></span><span class="val num">+3.1</span>
+    </div>
+    <figcaption>Self-bias in percentage points. As a judge, GPT-6 Astra gives its own answers a 94% win rate; the other judges give the same answers 59%.</figcaption>
+  </figure>
+  <p>Arena found the same pattern independently on real user battles, where GPT-6 Astra picked its own answer in 88% of cases. It is the main reason a single model should not grade its own family's models, and one motivation for spreading judgment across the whole panel.</p>
+
+  <h3>Some judges mostly follow the display order</h3>
+  <p>A reliable judge should give the same verdict when the two answers are swapped, and should pick the first answer about half the time.</p>
+  <div class="scroll">
+  <table>
+    <thead><tr><th>Judge</th><th class="r">Same verdict after swapping A and B</th><th class="r">First answer wins (decisive verdicts)</th></tr></thead>
+    <tbody>
+      <tr><td>GPT-6 Astra</td><td class="r num">93.8%</td><td class="r num">49.2%</td></tr>
+      <tr><td>Claude Opus 5.5</td><td class="r num">92.5%</td><td class="r num">48.0%</td></tr>
+      <tr><td>Kimi K3</td><td class="r num">88.5%</td><td class="r num">50.9%</td></tr>
+      <tr><td>GLM-5.3</td><td class="r num">85.5%</td><td class="r num">49.7%</td></tr>
+      <tr><td>Grok 4.6</td><td class="r num">85.0%</td><td class="r num">53.7%</td></tr>
+      <tr><td>Qwen3.8-27B</td><td class="r num">78.0%</td><td class="r num">56.3%</td></tr>
+      <tr><td>Muse Glimmer 30B</td><td class="r num"><strong>54.3%</strong></td><td class="r num"><strong>70.4%</strong></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p style="margin-top:16px">Muse Glimmer 30B picks the first answer 70% of the time and keeps its verdict after a swap only 54% of the time, barely better than chance. Judging both orders keeps this from distorting the comparisons, and PRD gives Muse a judge weight of zero, so its votes do not affect the PRD scores at all.</p>
+
+  <h3>Peer weighting concentrates trust in the strongest judges</h3>
+  <p>The four strongest models end up with 83% of the total judge weight, spread fairly evenly (0.19–0.23 each), so no single company's judge dominates. The three weakest judges together hold 17%. In this release the weighted and unweighted rankings agree; the weighting matters most when weak judges disagree with strong ones, which the meta-evaluation above examines.</p>
+
+  <h2>Use PeerEval yourself</h2>
+  <p>The scoring and judging code is open source as the <code>peereval</code> Python package. If you already have pairwise judgments, scoring needs no API keys:</p>
+  <pre><code>pip install peereval
+peereval score judgments/*.jsonl --bootstrap 1000 --json results.json</code></pre>
+  <p>To produce judgments from your own models' answers through any OpenAI-compatible endpoint (OpenAI, OpenRouter, vLLM, SGLang):</p>
+  <pre><code>pip install "peereval[judge]"
+peereval generate questions.jsonl --models models.json --out answers.jsonl
+peereval judge answers.jsonl --judges models.json --out judgments.jsonl</code></pre>
+  <p>Code and documentation: <a href="https://github.com/peereval-ai/peer_rank_tool" target="_blank" rel="noopener">github.com/peereval-ai/peer_rank_tool</a> · Package: <a href="https://pypi.org/project/peereval/" target="_blank" rel="noopener">pypi.org/project/peereval</a></p>
+</article>
+</body>
+</html>

@@ -74,6 +74,12 @@
 }
 
 [hidden] { display: none !important; }
+nav.top { display: flex; align-items: center; justify-content: space-between; padding-bottom: 16px; border-bottom: 1px solid var(--line); font: 500 14px/1 Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+nav.top .brand { color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: -.01em; }
+nav.top .links { display: flex; gap: 18px; }
+nav.top .links a { color: var(--muted); text-decoration: none; }
+nav.top .links a:hover, nav.top .links a[aria-current="page"] { color: var(--ink); }
+
 * { box-sizing: border-box; }
 body {
   background: var(--ground);
@@ -171,6 +177,10 @@ footer a { color: var(--blue); }
 <body>
 
 <div class="wrap">
+  <nav class="top">
+    <a class="brand" href="./">PeerEval</a>
+    <div class="links"><a href="./" aria-current="page">Leaderboard</a><a href="blog.html">Blog</a></div>
+  </nav>
   <header>
     <h1>PeerEval</h1>
     <p class="lede">Open evaluation for language models. Seven LLMs answer the same questions, then judge each other's answers without knowing who wrote them. Models are ranked by PRD Peer Rank score.</p>
