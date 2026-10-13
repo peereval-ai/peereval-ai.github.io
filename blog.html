@@ -269,7 +269,7 @@ svg text { font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   <h3>4. Report uncertainty</h3>
   <ul>
     <li><strong>95% confidence intervals.</strong> We resample the questions with replacement 1,000 times (within each benchmark) and recompute every score; the interval covers the middle 95%.</li>
-    <li><strong>Rank (UB).</strong> 1 + the number of models whose interval lies entirely above a model's interval. Models that share a Rank (UB) are not clearly separated.</li>
+    <li><strong>Rank (UB).</strong> The best rank a model could plausibly have: 1 + the number of models that are clearly better, meaning their entire interval lies above this model's. For example, GLM-5.3 ranks second by score, but its gap to Claude Opus 5.5 is within the uncertainty, so its Rank (UB) is 1: the two are statistically tied. Models that share a Rank (UB) cannot be told apart with the current data.</li>
     <li><strong>Elo.</strong> A Bradley-Terry model fitted to the same verdicts, shown on the Elo scale: a 100-point gap means the higher model is expected to win about 64% of comparisons.</li>
   </ul>
 

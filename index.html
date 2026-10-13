@@ -306,12 +306,12 @@ footer a { color: var(--blue); }
   function columns() {
     var cols = [
       { key: "rank", label: "Rank" },
-      { key: "ub", label: "Rank (UB)" },
+      { key: "ub", label: "Rank (UB)", tip: "The best rank this model could plausibly have: 1 + the number of models that are clearly better (their whole 95% interval is above this model's). Models with the same Rank (UB) are statistically tied." },
       { key: "name", label: "Model" },
       { key: "org", label: "Organization" },
       { key: "score", label: "PRD score" },
-      { key: "ci", label: "95% CI" },
-      { key: "elo", label: "Elo" }
+      { key: "ci", label: "95% CI", tip: "How far the PRD score could move up or down if the evaluation were rerun on different questions (95% bootstrap interval)." },
+      { key: "elo", label: "Elo", tip: "Bradley-Terry rating on the Elo scale. A 100-point gap means the higher model is expected to win about 64% of comparisons." }
     ];
     if (state.cat === "overall") {
       cols.push({ key: "weight", label: "Judge weight" });
@@ -333,6 +333,7 @@ footer a { color: var(--blue); }
       var btn = document.createElement("button");
       btn.type = "button";
       btn.id = "sort-" + c.key;
+      if (c.tip) btn.title = c.tip;
       btn.innerHTML = c.label + (active ? ' <span class="arrow">' + (state.sortDir === "asc" ? "▲" : "▼") + "</span>" : "");
       btn.addEventListener("click", function () {
         if (state.sortKey === c.key) state.sortDir = state.sortDir === "asc" ? "desc" : "asc";
@@ -387,8 +388,8 @@ footer a { color: var(--blue); }
     $("lb-body").innerHTML = html;
 
     $("lb-note").textContent = state.cat === "overall"
-      ? "PRD score over all three benchmarks. 95% CI: bootstrap interval over questions. Elo: Bradley-Terry rating on the Elo scale (100 points ≈ 64% expected win rate), with its 95% interval; only differences between models are meaningful. Rank (UB): 1 + the number of models that are clearly better; models sharing a Rank (UB) are not clearly separated. Judge weight: how much PRD trusts the model as a judge (weights add up to 1). Self-bias: how much more the model likes its own answers than the other judges do. Each model also judges pairs it appears in; every pair is judged in both display orders."
-      : "PRD score on this benchmark. 95% CI: bootstrap interval over questions. Elo: Bradley-Terry rating on the Elo scale, with its 95% interval. Rank (UB): 1 + the number of models that are clearly better. ▲▼ shows the change from the model's overall rank.";
+      ? "PRD score over all three benchmarks. 95% CI: bootstrap interval over questions. Elo: Bradley-Terry rating on the Elo scale (100 points ≈ 64% expected win rate), with its 95% interval; only differences between models are meaningful. Rank (UB): the best rank a model could plausibly have, i.e. 1 + the number of models that are clearly better (their whole 95% interval is above this model's); models with the same Rank (UB) are statistically tied. Judge weight: how much PRD trusts the model as a judge (weights add up to 1). Self-bias: how much more the model likes its own answers than the other judges do. Each model also judges pairs it appears in; every pair is judged in both display orders."
+      : "PRD score on this benchmark. 95% CI: bootstrap interval over questions. Elo: Bradley-Terry rating on the Elo scale, with its 95% interval. Rank (UB): the best rank a model could plausibly have; models with the same Rank (UB) are statistically tied. ▲▼ shows the change from the model's overall rank.";
   }
 
   function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
