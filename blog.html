@@ -124,6 +124,20 @@ td.c, th.c { text-align: center; }
 .bars .val { text-align: right; color: var(--muted); }
 svg text { font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
 .chart { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px 10px; }
+/* peer panel ring — brand marks from lobehub/icons-static-svg (MIT); logos remain their owners' trademarks.
+   Base paint is on the SVG as presentation attributes; CSS adds chrome + the :has() hover enhancement. */
+svg.peer { display: block; min-width: 660px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+.peer-chord { transition: opacity .12s, stroke .12s, stroke-width .12s; }
+.peer-ic.mono { color: var(--ink); fill: var(--ink); }
+.peer-hit { pointer-events: all; }
+svg.peer:has(.peer-hit:hover) .peer-chord { opacity: .07; }
+svg.peer:has(.h0:hover) .peer-chord.c0 { opacity: 1; stroke: var(--blue); stroke-width: 1.6; }
+svg.peer:has(.h1:hover) .peer-chord.c1 { opacity: 1; stroke: var(--blue); stroke-width: 1.6; }
+svg.peer:has(.h2:hover) .peer-chord.c2 { opacity: 1; stroke: var(--blue); stroke-width: 1.6; }
+svg.peer:has(.h3:hover) .peer-chord.c3 { opacity: 1; stroke: var(--blue); stroke-width: 1.6; }
+svg.peer:has(.h4:hover) .peer-chord.c4 { opacity: 1; stroke: var(--blue); stroke-width: 1.6; }
+svg.peer:has(.h5:hover) .peer-chord.c5 { opacity: 1; stroke: var(--blue); stroke-width: 1.6; }
+svg.peer:has(.h6:hover) .peer-chord.c6 { opacity: 1; stroke: var(--blue); stroke-width: 1.6; }
 .formula { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px 12px; color: var(--ink); overflow-x: auto; }
 .formula math { font-family: "STIX Two Math", "Cambria Math", "Latin Modern Math", "Source Serif 4", serif; font-size: 20px; margin: 6px 0 12px; }
 .formula .where { font: 14px/1.55 Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: var(--body); margin: 6px 0 2px; padding-left: 20px; }
@@ -134,6 +148,18 @@ svg text { font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 </style>
 </head>
 <body>
+
+<svg class="sprite" aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden">
+  <defs>
+    <symbol id="pc-claude" viewBox="0 0 24 24" fill-rule="evenodd"><path d="M4.709 15.955l4.72-2.647.08-.23-.08-.128H9.2l-.79-.048-2.698-.073-2.339-.097-2.266-.122-.571-.121L0 11.784l.055-.352.48-.321.686.06 1.52.103 2.278.158 1.652.097 2.449.255h.389l.055-.157-.134-.098-.103-.097-2.358-1.596-2.552-1.688-1.336-.972-.724-.491-.364-.462-.158-1.008.656-.722.881.06.225.061.893.686 1.908 1.476 2.491 1.833.365.304.145-.103.019-.073-.164-.274-1.355-2.446-1.446-2.49-.644-1.032-.17-.619a2.97 2.97 0 01-.104-.729L6.283.134 6.696 0l.996.134.42.364.62 1.414 1.002 2.229 1.555 3.03.456.898.243.832.091.255h.158V9.01l.128-1.706.237-2.095.23-2.695.08-.76.376-.91.747-.492.584.28.48.685-.067.444-.286 1.851-.559 2.903-.364 1.942h.212l.243-.242.985-1.306 1.652-2.064.73-.82.85-.904.547-.431h1.033l.76 1.129-.34 1.166-1.064 1.347-.881 1.142-1.264 1.7-.79 1.36.073.11.188-.02 2.856-.606 1.543-.28 1.841-.315.833.388.091.395-.328.807-1.969.486-2.309.462-3.439.813-.042.03.049.061 1.549.146.662.036h1.622l3.02.225.79.522.474.638-.079.485-1.215.62-1.64-.389-3.829-.91-1.312-.329h-.182v.11l1.093 1.068 2.006 1.81 2.509 2.33.127.578-.322.455-.34-.049-2.205-1.657-.851-.747-1.926-1.62h-.128v.17l.444.649 2.345 3.521.122 1.08-.17.353-.608.213-.668-.122-1.374-1.925-1.415-2.167-1.143-1.943-.14.08-.674 7.254-.316.37-.729.28-.607-.461-.322-.747.322-1.476.389-1.924.315-1.53.286-1.9.17-.632-.012-.042-.14.018-1.434 1.967-2.18 2.945-1.726 1.845-.414.164-.717-.37.067-.662.401-.589 2.388-3.036 1.44-1.882.93-1.086-.006-.158h-.055L4.132 18.56l-1.13.146-.487-.456.061-.746.231-.243 1.908-1.312-.006.006z" fill="#D97757" fill-rule="nonzero"></path></symbol>
+    <symbol id="pc-glm" viewBox="0 0 30 30" fill-rule="evenodd"><path d="M24.51,28.51H5.49c-2.21,0-4-1.79-4-4V5.49c0-2.21,1.79-4,4-4h19.03c2.21,0,4,1.79,4,4v19.03C28.51,26.72,26.72,28.51,24.51,28.51z M15.47,7.1l-1.3,1.85c-0.2,0.29-0.54,0.47-0.9,0.47h-7.1V7.09C6.16,7.1,15.47,7.1,15.47,7.1z M24.3,7.1L13.14,22.91L5.7,22.91L16.86,7.1Z M14.53,22.91l1.31-1.86c0.2-0.29,0.54-0.47,0.9-0.47h7.09v2.33H14.53z"/></symbol>
+    <symbol id="pc-openai" viewBox="0 0 24 24" fill-rule="evenodd"><path d="M9.205 8.658v-2.26c0-.19.072-.333.238-.428l4.543-2.616c.619-.357 1.356-.523 2.117-.523 2.854 0 4.662 2.212 4.662 4.566 0 .167 0 .357-.024.547l-4.71-2.759a.797.797 0 00-.856 0l-5.97 3.473zm10.609 8.8V12.06c0-.333-.143-.57-.429-.737l-5.97-3.473 1.95-1.118a.433.433 0 01.476 0l4.543 2.617c1.309.76 2.189 2.378 2.189 3.948 0 1.808-1.07 3.473-2.76 4.163zM7.802 12.703l-1.95-1.142c-.167-.095-.239-.238-.239-.428V5.899c0-2.545 1.95-4.472 4.591-4.472 1 0 1.927.333 2.712.928L8.23 5.067c-.285.166-.428.404-.428.737v6.898zM12 15.128l-2.795-1.57v-3.33L12 8.658l2.795 1.57v3.33L12 15.128zm1.796 7.23c-1 0-1.927-.332-2.712-.927l4.686-2.712c.285-.166.428-.404.428-.737v-6.898l1.974 1.142c.167.095.238.238.238.428v5.233c0 2.545-1.974 4.472-4.614 4.472zm-5.637-5.303l-4.544-2.617c-1.308-.761-2.188-2.378-2.188-3.948A4.482 4.482 0 014.21 6.327v5.423c0 .333.143.571.428.738l5.947 3.449-1.95 1.118a.432.432 0 01-.476 0zm-.262 3.9c-2.688 0-4.662-2.021-4.662-4.519 0-.19.024-.38.047-.57l4.686 2.71c.286.167.571.167.856 0l5.97-3.448v2.26c0 .19-.07.333-.237.428l-4.543 2.616c-.619.357-1.356.523-2.117.523zm5.899 2.83a5.947 5.947 0 005.827-4.756C22.287 18.339 24 15.84 24 13.296c0-1.665-.713-3.282-1.998-4.448.119-.5.19-.999.19-1.498 0-3.401-2.759-5.947-5.946-5.947-.642 0-1.26.095-1.88.31A5.962 5.962 0 0010.205 0a5.947 5.947 0 00-5.827 4.757C1.713 5.447 0 7.945 0 10.49c0 1.666.713 3.283 1.998 4.448-.119.5-.19 1-.19 1.499 0 3.401 2.759 5.946 5.946 5.946.642 0 1.26-.095 1.88-.309a5.96 5.96 0 004.162 1.713z"></path></symbol>
+    <symbol id="pc-kimi" viewBox="0 0 24 24" fill-rule="evenodd"><path d="M21.846 0a1.923 1.923 0 110 3.846H20.15a.226.226 0 01-.227-.226V1.923C19.923.861 20.784 0 21.846 0z"></path><path d="M11.065 11.199l7.257-7.2c.137-.136.06-.41-.116-.41H14.3a.164.164 0 00-.117.051l-7.82 7.756c-.122.12-.302.013-.302-.179V3.82c0-.127-.083-.23-.185-.23H3.186c-.103 0-.186.103-.186.23V19.77c0 .128.083.23.186.23h2.69c.103 0 .186-.102.186-.23v-3.25c0-.069.025-.135.069-.178l2.424-2.406a.158.158 0 01.205-.023l6.484 4.772a7.677 7.677 0 003.453 1.283c.108.012.2-.095.2-.23v-3.06c0-.117-.07-.212-.164-.227a5.028 5.028 0 01-2.027-.807l-5.613-4.064c-.117-.078-.132-.279-.028-.381z"></path></symbol>
+    <symbol id="pc-grok" viewBox="0 0 24 24" fill-rule="evenodd"><path d="M9.27 15.29l7.978-5.897c.391-.29.95-.177 1.137.272.98 2.369.542 5.215-1.41 7.169-1.951 1.954-4.667 2.382-7.149 1.406l-2.711 1.257c3.889 2.661 8.611 2.003 11.562-.953 2.341-2.344 3.066-5.539 2.388-8.42l.006.007c-.983-4.232.242-5.924 2.75-9.383.06-.082.12-.164.179-.248l-3.301 3.305v-.01L9.267 15.292M7.623 16.723c-2.792-2.67-2.31-6.801.071-9.184 1.761-1.763 4.647-2.483 7.166-1.425l2.705-1.25a7.808 7.808 0 00-1.829-1A8.975 8.975 0 005.984 5.83c-2.533 2.536-3.33 6.436-1.962 9.764 1.022 2.487-.653 4.246-2.34 6.022-.599.63-1.199 1.259-1.682 1.925l7.62-6.815"></path></symbol>
+    <symbol id="pc-qwen" viewBox="0 0 24 24" fill-rule="evenodd"><path d="M12.604 1.34c.393.69.784 1.382 1.174 2.075a.18.18 0 00.157.091h5.552c.174 0 .322.11.446.327l1.454 2.57c.19.337.24.478.024.837-.26.43-.513.864-.76 1.3l-.367.658c-.106.196-.223.28-.04.512l2.652 4.637c.172.301.111.494-.043.77-.437.785-.882 1.564-1.335 2.34-.159.272-.352.375-.68.37-.777-.016-1.552-.01-2.327.016a.099.099 0 00-.081.05 575.097 575.097 0 01-2.705 4.74c-.169.293-.38.363-.725.364-.997.003-2.002.004-3.017.002a.537.537 0 01-.465-.271l-1.335-2.323a.09.09 0 00-.083-.049H4.982c-.285.03-.553-.001-.805-.092l-1.603-2.77a.543.543 0 01-.002-.54l1.207-2.12a.198.198 0 000-.197 550.951 550.951 0 01-1.875-3.272l-.79-1.395c-.16-.31-.173-.496.095-.965.465-.813.927-1.625 1.387-2.436.132-.234.304-.334.584-.335a338.3 338.3 0 012.589-.001.124.124 0 00.107-.063l2.806-4.895a.488.488 0 01.422-.246c.524-.001 1.053 0 1.583-.006L11.704 1c.341-.003.724.032.9.34zm-3.432.403a.06.06 0 00-.052.03L6.254 6.788a.157.157 0 01-.135.078H3.253c-.056 0-.07.025-.041.074l5.81 10.156c.025.042.013.062-.034.063l-2.795.015a.218.218 0 00-.2.116l-1.32 2.31c-.044.078-.021.118.068.118l5.716.008c.046 0 .08.02.104.061l1.403 2.454c.046.081.092.082.139 0l5.006-8.76.783-1.382a.055.055 0 01.096 0l1.424 2.53a.122.122 0 00.107.062l2.763-.02a.04.04 0 00.035-.02.041.041 0 000-.04l-2.9-5.086a.108.108 0 010-.113l.293-.507 1.12-1.977c.024-.041.012-.062-.035-.062H9.2c-.059 0-.073-.026-.043-.077l1.434-2.505a.107.107 0 000-.114L9.225 1.774a.06.06 0 00-.053-.031zm6.29 8.02c.046 0 .058.02.034.06l-.832 1.465-2.613 4.585a.056.056 0 01-.05.029.058.058 0 01-.05-.029L8.498 9.841c-.02-.034-.01-.052.028-.054l.216-.012 6.722-.012z" fill="url(#lobe-icons-qwen-_R_0_)" fill-rule="nonzero"></path><defs><linearGradient id="lobe-icons-qwen-_R_0_" x1="0%" x2="100%" y1="0%" y2="0%"><stop offset="0%" stop-color="#6336E7" stop-opacity=".84"></stop><stop offset="100%" stop-color="#6F69F7" stop-opacity=".84"></stop></linearGradient></defs></symbol>
+    <symbol id="pc-meta" viewBox="0 0 24 24" fill-rule="evenodd"><path d="M6.897 4h-.024l-.031 2.615h.022c1.715 0 3.046 1.357 5.94 6.246l.175.297.012.02 1.62-2.438-.012-.019a48.763 48.763 0 00-1.098-1.716 28.01 28.01 0 00-1.175-1.629C10.413 4.932 8.812 4 6.896 4z" fill="url(#lobe-icons-meta-0-_R_0_)"></path><path d="M6.873 4C4.95 4.01 3.247 5.258 2.02 7.17a4.352 4.352 0 00-.01.017l2.254 1.231.011-.017c.718-1.083 1.61-1.774 2.568-1.785h.021L6.896 4h-.023z" fill="url(#lobe-icons-meta-1-_R_0_)"></path><path d="M2.019 7.17l-.011.017C1.2 8.447.598 9.995.274 11.664l-.005.022 2.534.6.004-.022c.27-1.467.786-2.828 1.456-3.845l.011-.017L2.02 7.17z" fill="url(#lobe-icons-meta-2-_R_0_)"></path><path d="M2.807 12.264l-2.533-.6-.005.022c-.177.918-.267 1.851-.269 2.786v.023l2.598.233v-.023a12.591 12.591 0 01.21-2.44z" fill="url(#lobe-icons-meta-3-_R_0_)"></path><path d="M2.677 15.537a5.462 5.462 0 01-.079-.813v-.022L0 14.468v.024a8.89 8.89 0 00.146 1.652l2.535-.585a4.106 4.106 0 01-.004-.022z" fill="url(#lobe-icons-meta-4-_R_0_)"></path><path d="M3.27 16.89c-.284-.31-.484-.756-.589-1.328l-.004-.021-2.535.585.004.021c.192 1.01.568 1.85 1.106 2.487l.014.017 2.018-1.745a2.106 2.106 0 01-.015-.016z" fill="url(#lobe-icons-meta-5-_R_0_)"></path><path d="M10.78 9.654c-1.528 2.35-2.454 3.825-2.454 3.825-2.035 3.2-2.739 3.917-3.871 3.917a1.545 1.545 0 01-1.186-.508l-2.017 1.744.014.017C2.01 19.518 3.058 20 4.356 20c1.963 0 3.374-.928 5.884-5.33l1.766-3.13a41.283 41.283 0 00-1.227-1.886z" fill="#0082FB"></path><path d="M13.502 5.946l-.016.016c-.4.43-.786.908-1.16 1.416.378.483.768 1.024 1.175 1.63.48-.743.928-1.345 1.367-1.807l.016-.016-1.382-1.24z" fill="url(#lobe-icons-meta-6-_R_0_)"></path><path d="M20.918 5.713C19.853 4.633 18.583 4 17.225 4c-1.432 0-2.637.787-3.723 1.944l-.016.016 1.382 1.24.016-.017c.715-.747 1.408-1.12 2.176-1.12.826 0 1.6.39 2.27 1.075l.015.016 1.589-1.425-.016-.016z" fill="#0082FB"></path><path d="M23.998 14.125c-.06-3.467-1.27-6.566-3.064-8.396l-.016-.016-1.588 1.424.015.016c1.35 1.392 2.277 3.98 2.361 6.971v.023h2.292v-.022z" fill="url(#lobe-icons-meta-7-_R_0_)"></path><path d="M23.998 14.15v-.023h-2.292v.022c.004.14.006.282.006.424 0 .815-.121 1.474-.368 1.95l-.011.022 1.708 1.782.013-.02c.62-.96.946-2.293.946-3.91 0-.083 0-.165-.002-.247z" fill="url(#lobe-icons-meta-8-_R_0_)"></path><path d="M21.344 16.52l-.011.02c-.214.402-.519.67-.917.787l.778 2.462a3.493 3.493 0 00.438-.182 3.558 3.558 0 001.366-1.218l.044-.065.012-.02-1.71-1.784z" fill="url(#lobe-icons-meta-9-_R_0_)"></path><path d="M19.92 17.393c-.262 0-.492-.039-.718-.14l-.798 2.522c.449.153.927.222 1.46.222.492 0 .943-.073 1.352-.215l-.78-2.462c-.167.05-.341.075-.517.073z" fill="url(#lobe-icons-meta-10-_R_0_)"></path><path d="M18.323 16.534l-.014-.017-1.836 1.914.016.017c.637.682 1.246 1.105 1.937 1.337l.797-2.52c-.291-.125-.573-.353-.9-.731z" fill="url(#lobe-icons-meta-11-_R_0_)"></path><path d="M18.309 16.515c-.55-.642-1.232-1.712-2.303-3.44l-1.396-2.336-.011-.02-1.62 2.438.012.02.989 1.668c.959 1.61 1.74 2.774 2.493 3.585l.016.016 1.834-1.914a2.353 2.353 0 01-.014-.017z" fill="url(#lobe-icons-meta-12-_R_0_)"></path><defs><linearGradient id="lobe-icons-meta-0-_R_0_" x1="75.897%" x2="26.312%" y1="89.199%" y2="12.194%"><stop offset=".06%" stop-color="#0867DF"></stop><stop offset="45.39%" stop-color="#0668E1"></stop><stop offset="85.91%" stop-color="#0064E0"></stop></linearGradient><linearGradient id="lobe-icons-meta-1-_R_0_" x1="21.67%" x2="97.068%" y1="75.874%" y2="23.985%"><stop offset="13.23%" stop-color="#0064DF"></stop><stop offset="99.88%" stop-color="#0064E0"></stop></linearGradient><linearGradient id="lobe-icons-meta-2-_R_0_" x1="38.263%" x2="60.895%" y1="89.127%" y2="16.131%"><stop offset="1.47%" stop-color="#0072EC"></stop><stop offset="68.81%" stop-color="#0064DF"></stop></linearGradient><linearGradient id="lobe-icons-meta-3-_R_0_" x1="47.032%" x2="52.15%" y1="90.19%" y2="15.745%"><stop offset="7.31%" stop-color="#007CF6"></stop><stop offset="99.43%" stop-color="#0072EC"></stop></linearGradient><linearGradient id="lobe-icons-meta-4-_R_0_" x1="52.155%" x2="47.591%" y1="58.301%" y2="37.004%"><stop offset="7.31%" stop-color="#007FF9"></stop><stop offset="100%" stop-color="#007CF6"></stop></linearGradient><linearGradient id="lobe-icons-meta-5-_R_0_" x1="37.689%" x2="61.961%" y1="12.502%" y2="63.624%"><stop offset="7.31%" stop-color="#007FF9"></stop><stop offset="100%" stop-color="#0082FB"></stop></linearGradient><linearGradient id="lobe-icons-meta-6-_R_0_" x1="34.808%" x2="62.313%" y1="68.859%" y2="23.174%"><stop offset="27.99%" stop-color="#007FF8"></stop><stop offset="91.41%" stop-color="#0082FB"></stop></linearGradient><linearGradient id="lobe-icons-meta-7-_R_0_" x1="43.762%" x2="57.602%" y1="6.235%" y2="98.514%"><stop offset="0%" stop-color="#0082FB"></stop><stop offset="99.95%" stop-color="#0081FA"></stop></linearGradient><linearGradient id="lobe-icons-meta-8-_R_0_" x1="60.055%" x2="39.88%" y1="4.661%" y2="69.077%"><stop offset="6.19%" stop-color="#0081FA"></stop><stop offset="100%" stop-color="#0080F9"></stop></linearGradient><linearGradient id="lobe-icons-meta-9-_R_0_" x1="30.282%" x2="61.081%" y1="59.32%" y2="33.244%"><stop offset="0%" stop-color="#027AF3"></stop><stop offset="100%" stop-color="#0080F9"></stop></linearGradient><linearGradient id="lobe-icons-meta-10-_R_0_" x1="20.433%" x2="82.112%" y1="50.001%" y2="50.001%"><stop offset="0%" stop-color="#0377EF"></stop><stop offset="99.94%" stop-color="#0279F1"></stop></linearGradient><linearGradient id="lobe-icons-meta-11-_R_0_" x1="40.303%" x2="72.394%" y1="35.298%" y2="57.811%"><stop offset=".19%" stop-color="#0471E9"></stop><stop offset="100%" stop-color="#0377EF"></stop></linearGradient><linearGradient id="lobe-icons-meta-12-_R_0_" x1="32.254%" x2="68.003%" y1="19.719%" y2="84.908%"><stop offset="27.65%" stop-color="#0867DF"></stop><stop offset="100%" stop-color="#0471E9"></stop></linearGradient></defs></symbol>
+  </defs>
+</svg>
 <nav class="top">
   <a class="brand" href="./">PeerEval</a>
   <div class="links"><a href="./">Leaderboard</a><a href="blog.html" aria-current="page">Blog</a></div>
@@ -155,6 +181,106 @@ svg text { font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       <li>The method is available as an open-source package: <code>pip install peereval</code>.</li>
     </ul>
   </div>
+
+  <figure>
+  <div class="scroll">
+  <svg class="peer" viewBox="0 0 720 380" width="100%" role="img" aria-label="Seven models in a ring, each both contestant and judge. A chord joins every pair of models, one per head-to-head battle. The ring around each model is thicker the more judge weight PRD gives it.">
+  <g class="peer-chords" fill="none" stroke="var(--muted)" stroke-width="1" opacity=".4">
+    <path class="peer-chord c0 c1" d="M234 80 Q265.7 130.1 324.7 123.7"/>
+    <path class="peer-chord c0 c2" d="M234 80 Q273.6 164.4 347.1 221.8"/>
+    <path class="peer-chord c0 c3" d="M234 80 Q251.6 192 284.3 300.5"/>
+    <path class="peer-chord c0 c4" d="M234 80 Q216.4 192 183.7 300.5"/>
+    <path class="peer-chord c0 c5" d="M234 80 Q194.4 164.4 120.9 221.8"/>
+    <path class="peer-chord c0 c6" d="M234 80 Q202.3 130.1 143.3 123.7"/>
+    <path class="peer-chord c1 c2" d="M324.7 123.7 Q305.3 179.7 347.1 221.8"/>
+    <path class="peer-chord c1 c3" d="M324.7 123.7 Q283.4 207.3 284.3 300.5"/>
+    <path class="peer-chord c1 c4" d="M324.7 123.7 Q248.1 207.3 183.7 300.5"/>
+    <path class="peer-chord c1 c5" d="M324.7 123.7 Q226.2 179.7 120.9 221.8"/>
+    <path class="peer-chord c1 c6" d="M324.7 123.7 Q234 145.4 143.3 123.7"/>
+    <path class="peer-chord c2 c3" d="M347.1 221.8 Q291.2 241.6 284.3 300.5"/>
+    <path class="peer-chord c2 c4" d="M347.1 221.8 Q256 241.6 183.7 300.5"/>
+    <path class="peer-chord c2 c5" d="M347.1 221.8 Q234 214.1 120.9 221.8"/>
+    <path class="peer-chord c2 c6" d="M347.1 221.8 Q241.8 179.7 143.3 123.7"/>
+    <path class="peer-chord c3 c4" d="M284.3 300.5 Q234 269.2 183.7 300.5"/>
+    <path class="peer-chord c3 c5" d="M284.3 300.5 Q212 241.6 120.9 221.8"/>
+    <path class="peer-chord c3 c6" d="M284.3 300.5 Q219.9 207.3 143.3 123.7"/>
+    <path class="peer-chord c4 c5" d="M183.7 300.5 Q176.8 241.6 120.9 221.8"/>
+    <path class="peer-chord c4 c6" d="M183.7 300.5 Q184.6 207.3 143.3 123.7"/>
+    <path class="peer-chord c5 c6" d="M120.9 221.8 Q162.7 179.7 143.3 123.7"/>
+  </g>
+  <g class="peer-plates" fill="var(--surface)">
+    <circle class="peer-plate" cx="234" cy="80" r="20"/>
+    <circle class="peer-plate" cx="324.7" cy="123.7" r="20"/>
+    <circle class="peer-plate" cx="347.1" cy="221.8" r="20"/>
+    <circle class="peer-plate" cx="284.3" cy="300.5" r="20"/>
+    <circle class="peer-plate" cx="183.7" cy="300.5" r="20"/>
+    <circle class="peer-plate" cx="120.9" cy="221.8" r="20"/>
+    <circle class="peer-plate" cx="143.3" cy="123.7" r="20"/>
+  </g>
+  <g class="peer-rings" fill="none" stroke="var(--ink)">
+    <circle class="peer-ring" cx="234" cy="80" r="22" stroke-width="5.5"/>
+    <circle class="peer-ring" cx="324.7" cy="123.7" r="22" stroke-width="5.1"/>
+    <circle class="peer-ring" cx="347.1" cy="221.8" r="22" stroke-width="4.7"/>
+    <circle class="peer-ring" cx="284.3" cy="300.5" r="22" stroke-width="4.5"/>
+    <circle class="peer-ring" cx="183.7" cy="300.5" r="22" stroke-width="2.3"/>
+    <circle class="peer-ring" cx="120.9" cy="221.8" r="22" stroke-width="1.8"/>
+    <circle class="peer-ring zero" cx="143.3" cy="123.7" r="22" stroke="var(--line-strong)" stroke-width="1" stroke-dasharray="2 3"/>
+  </g>
+  <g class="peer-icons">
+    <use class="peer-ic n0" href="#pc-claude" x="220" y="66" width="28" height="28"/>
+    <use class="peer-ic mono n1" href="#pc-glm" x="310.7" y="109.7" width="28" height="28"/>
+    <use class="peer-ic mono n2" href="#pc-openai" x="333.1" y="207.8" width="28" height="28"/>
+    <use class="peer-ic n3" href="#pc-kimi" x="270.3" y="286.5" width="28" height="28" fill="#1783FF"/>
+    <use class="peer-ic mono n4" href="#pc-grok" x="169.7" y="286.5" width="28" height="28"/>
+    <use class="peer-ic n5" href="#pc-qwen" x="106.9" y="207.8" width="28" height="28"/>
+    <use class="peer-ic n6" href="#pc-meta" x="129.3" y="109.7" width="28" height="28"/>
+  </g>
+  <g class="peer-labels">
+    <text class="peer-name" x="234" y="25" text-anchor="middle" font-size="12" font-weight="500" fill="var(--ink)">Opus 5.5</text>
+    <text class="peer-w num" x="234" y="38" text-anchor="middle" font-size="10.5" fill="var(--muted)">0.231</text>
+    <text class="peer-name" x="357.5" y="84.5" text-anchor="start" font-size="12" font-weight="500" fill="var(--ink)">GLM-5.3</text>
+    <text class="peer-w num" x="357.5" y="97.5" text-anchor="start" font-size="10.5" fill="var(--muted)">0.215</text>
+    <text class="peer-name" x="388" y="229.2" text-anchor="start" font-size="12" font-weight="500" fill="var(--ink)">GPT-6 Astra</text>
+    <text class="peer-w num" x="388" y="242.2" text-anchor="start" font-size="10.5" fill="var(--muted)">0.197</text>
+    <text class="peer-name" x="302.6" y="346.4" text-anchor="start" font-size="12" font-weight="500" fill="var(--ink)">Kimi K3</text>
+    <text class="peer-w num" x="302.6" y="359.4" text-anchor="start" font-size="10.5" fill="var(--muted)">0.187</text>
+    <text class="peer-name" x="165.4" y="346.4" text-anchor="end" font-size="12" font-weight="500" fill="var(--ink)">Grok 4.6</text>
+    <text class="peer-w num" x="165.4" y="359.4" text-anchor="end" font-size="10.5" fill="var(--muted)">0.096</text>
+    <text class="peer-name" x="80" y="229.2" text-anchor="end" font-size="12" font-weight="500" fill="var(--ink)">Qwen 27B</text>
+    <text class="peer-w num" x="80" y="242.2" text-anchor="end" font-size="10.5" fill="var(--muted)">0.074</text>
+    <text class="peer-name" x="110.5" y="84.5" text-anchor="end" font-size="12" font-weight="500" fill="var(--ink)">Muse 30B</text>
+    <text class="peer-w num" x="110.5" y="97.5" text-anchor="end" font-size="10.5" fill="var(--muted)">0.000</text>
+  </g>
+  <g class="peer-hits" fill="none" pointer-events="all">
+    <circle class="peer-hit h0" cx="234" cy="80" r="26"><title>Opus 5.5 — judge weight 0.231</title></circle>
+    <circle class="peer-hit h1" cx="324.7" cy="123.7" r="26"><title>GLM-5.3 — judge weight 0.215</title></circle>
+    <circle class="peer-hit h2" cx="347.1" cy="221.8" r="26"><title>GPT-6 Astra — judge weight 0.197</title></circle>
+    <circle class="peer-hit h3" cx="284.3" cy="300.5" r="26"><title>Kimi K3 — judge weight 0.187</title></circle>
+    <circle class="peer-hit h4" cx="183.7" cy="300.5" r="26"><title>Grok 4.6 — judge weight 0.096</title></circle>
+    <circle class="peer-hit h5" cx="120.9" cy="221.8" r="26"><title>Qwen 27B — judge weight 0.074</title></circle>
+    <circle class="peer-hit h6" cx="143.3" cy="123.7" r="26"><title>Muse 30B — judge weight 0.000; PRD discards its votes</title></circle>
+  </g>
+  <g class="peer-legend">
+    <circle cx="492" cy="64" r="7" fill="none" stroke="var(--ink)" stroke-width="4"/>
+    <text class="peer-lg-h" x="512" y="68" font-size="11.5" font-weight="600" fill="var(--ink)">Judge weight</text>
+    <text class="peer-lg" x="482" y="90" font-size="11.5" fill="var(--body)">Ring thickness is how much a</text>
+    <text class="peer-lg" x="482" y="105" font-size="11.5" fill="var(--body)">judge's verdicts count, set</text>
+    <text class="peer-lg" x="482" y="120" font-size="11.5" fill="var(--body)">by the model's own score.</text>
+    <path d="M482 168 Q492 155 502 168" fill="none" stroke="var(--muted)" stroke-width="1.5" opacity=".7"/>
+    <text class="peer-lg-h" x="512" y="170" font-size="11.5" font-weight="600" fill="var(--ink)">One pairwise battle</text>
+    <text class="peer-lg" x="482" y="192" font-size="11.5" fill="var(--body)">Two answers to the same</text>
+    <text class="peer-lg" x="482" y="207" font-size="11.5" fill="var(--body)">question, scored by all seven</text>
+    <text class="peer-lg" x="482" y="222" font-size="11.5" fill="var(--body)">judges in both orders.</text>
+    <circle cx="492" cy="264" r="14" fill="none" stroke="var(--line-strong)" stroke-width="1"/>
+    <text class="peer-lg-h" x="512" y="268" font-size="11.5" font-weight="600" fill="var(--ink)">Contestant and judge</text>
+    <text class="peer-lg" x="482" y="290" font-size="11.5" fill="var(--body)">Every model plays both roles,</text>
+    <text class="peer-lg" x="482" y="305" font-size="11.5" fill="var(--body)">including on its own battles.</text>
+    <text class="peer-hint" x="482" y="338" font-size="10.5" fill="var(--muted)">Hover a model for its battles.</text>
+  </g>
+  </svg>
+  </div>
+    <figcaption>The first release: seven models, each answering every question and judging every pair of answers, including pairs its own answer is in. Judge weights are the values PRD converges on after about ten rounds; Muse Glimmer 30B lands at zero, so its verdicts drop out of the ranking entirely.</figcaption>
+  </figure>
 
   <h2>Why peer evaluation?</h2>
   <p>Open-ended tasks, such as answering a hard user request or writing a story, have no single correct answer, so they are usually evaluated in one of two ways. <strong>Human preference</strong>, as in Arena, is the gold standard but slow and expensive. <strong>An LLM judge</strong> is fast and cheap, but a single judge brings its own taste and biases into the ranking. Arena recently reported that frontier judges <a href="https://arena.ai/blog/llm-judge-self-preference" target="_blank" rel="noopener">pick their own answers far more often than humans do</a>. Some leaderboards instead use a small fixed panel of frontier judges; Artificial Analysis's GDPval-AA, for example, uses three.</p>
