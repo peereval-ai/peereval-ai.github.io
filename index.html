@@ -186,7 +186,7 @@ tbody tr:hover td { background: var(--surface-2); }
 footer { font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
 footer a { color: var(--blue); }
 /* peer ring (same figure as the blog; brand marks from lobehub/icons-static-svg, MIT) */
-header.hero { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 28px; align-items: center; }
+header.hero { display: grid; grid-template-columns: minmax(0, 1fr) 440px; gap: 32px; align-items: center; }
 .peer-fig { margin: 0; }
 .peer-fig > a { display: block; color: inherit; text-decoration: none; }
 svg.peer { display: block; width: 100%; height: auto; overflow: visible; }
@@ -205,9 +205,9 @@ svg.peer:has(.h3:hover) .peer-chord.c3 { opacity: 1; stroke: var(--blue); stroke
 svg.peer:has(.h4:hover) .peer-chord.c4 { opacity: 1; stroke: var(--blue); stroke-width: 1.6; }
 svg.peer:has(.h5:hover) .peer-chord.c5 { opacity: 1; stroke: var(--blue); stroke-width: 1.6; }
 svg.peer:has(.h6:hover) .peer-chord.c6 { opacity: 1; stroke: var(--blue); stroke-width: 1.6; }
-@media (max-width: 760px) {
+@media (max-width: 900px) {
   header.hero { grid-template-columns: 1fr; gap: 12px; }
-  .peer-fig { max-width: 300px; margin: 0 auto; }
+  .peer-fig { max-width: 360px; margin: 0 auto; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
