@@ -286,7 +286,7 @@ svg.peer:has(.h6:hover) .peer-chord.c6 { opacity: 1; stroke: var(--blue); stroke
   <p>Open-ended tasks, such as answering a hard user request or writing a story, have no single correct answer, so they are usually evaluated in one of two ways. <strong>Human preference</strong>, as in Arena, is the gold standard but slow and expensive. <strong>An LLM judge</strong> is fast and cheap, but a single judge brings its own taste and biases into the ranking. Arena recently reported that frontier judges <a href="https://arena.ai/blog/llm-judge-self-preference" target="_blank" rel="noopener">pick their own answers far more often than humans do</a>. Some leaderboards instead use a small fixed panel of frontier judges; Artificial Analysis's GDPval-AA, for example, uses three.</p>
   <p>PeerEval takes the panel idea to its end. Every model being ranked also sits on the panel, so no single company's model decides the result. That raises an obvious question, which is how much to trust each judge. PeerEval's answer is to let the data decide: a judge earns influence through the quality of its own answers, as rated by everyone else.</p>
 
-  <h2>How it works</h2>
+  <h2 id="how-it-works">How it works</h2>
 
   <figure>
     <div class="scroll">

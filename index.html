@@ -185,6 +185,30 @@ tbody tr:hover td { background: var(--surface-2); }
 
 footer { font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
 footer a { color: var(--blue); }
+/* peer ring (same figure as the blog; brand marks from lobehub/icons-static-svg, MIT) */
+header.hero { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 28px; align-items: center; }
+.peer-fig { margin: 0; }
+.peer-fig > a { display: block; color: inherit; text-decoration: none; }
+svg.peer { display: block; width: 100%; height: auto; overflow: visible; }
+svg.peer text { font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+svg.peer text.num { font-family: "DM Mono", ui-monospace, Menlo, Consolas, monospace; }
+.peer-fig figcaption { margin-top: 6px; font-size: 12px; color: var(--muted); text-align: center; }
+.peer-fig figcaption a { color: var(--blue); text-decoration: none; white-space: nowrap; }
+.peer-chord { transition: opacity .12s, stroke .12s, stroke-width .12s; }
+.peer-ic.mono { color: var(--ink); fill: var(--ink); }
+.peer-hit { pointer-events: all; }
+svg.peer:has(.peer-hit:hover) .peer-chord { opacity: .07; }
+svg.peer:has(.h0:hover) .peer-chord.c0 { opacity: 1; stroke: var(--blue); stroke-width: 1.6; }
+svg.peer:has(.h1:hover) .peer-chord.c1 { opacity: 1; stroke: var(--blue); stroke-width: 1.6; }
+svg.peer:has(.h2:hover) .peer-chord.c2 { opacity: 1; stroke: var(--blue); stroke-width: 1.6; }
+svg.peer:has(.h3:hover) .peer-chord.c3 { opacity: 1; stroke: var(--blue); stroke-width: 1.6; }
+svg.peer:has(.h4:hover) .peer-chord.c4 { opacity: 1; stroke: var(--blue); stroke-width: 1.6; }
+svg.peer:has(.h5:hover) .peer-chord.c5 { opacity: 1; stroke: var(--blue); stroke-width: 1.6; }
+svg.peer:has(.h6:hover) .peer-chord.c6 { opacity: 1; stroke: var(--blue); stroke-width: 1.6; }
+@media (max-width: 760px) {
+  header.hero { grid-template-columns: 1fr; gap: 12px; }
+  .peer-fig { max-width: 300px; margin: 0 auto; }
+}
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
@@ -207,9 +231,93 @@ footer a { color: var(--blue); }
     <a class="brand" href="./">PeerEval</a>
     <div class="links"><a href="./" aria-current="page">Leaderboard</a><a href="blog.html">Blog</a></div>
   </nav>
-  <header>
+  <header class="hero">
+    <div>
     <h1>PeerEval</h1>
     <p class="lede">Open evaluation for language models. Seven LLMs answer the same questions, then judge each other's answers without knowing who wrote them. Models are ranked by PRD Peer Rank score.</p>
+    </div>
+    <figure class="peer-fig">
+      <a href="blog.html#how-it-works" aria-label="How PeerEval works">
+  <svg class="peer" viewBox="22 8 444 362" role="img" aria-label="Seven models in a ring, each both contestant and judge. A line joins every pair of models; the ring around each model is thicker the more judge weight PRD gives it.">
+  <g class="peer-chords" fill="none" stroke="var(--muted)" stroke-width="1" opacity=".4">
+    <path class="peer-chord c0 c1" d="M234 80 Q265.7 130.1 324.7 123.7"/>
+    <path class="peer-chord c0 c2" d="M234 80 Q273.6 164.4 347.1 221.8"/>
+    <path class="peer-chord c0 c3" d="M234 80 Q251.6 192 284.3 300.5"/>
+    <path class="peer-chord c0 c4" d="M234 80 Q216.4 192 183.7 300.5"/>
+    <path class="peer-chord c0 c5" d="M234 80 Q194.4 164.4 120.9 221.8"/>
+    <path class="peer-chord c0 c6" d="M234 80 Q202.3 130.1 143.3 123.7"/>
+    <path class="peer-chord c1 c2" d="M324.7 123.7 Q305.3 179.7 347.1 221.8"/>
+    <path class="peer-chord c1 c3" d="M324.7 123.7 Q283.4 207.3 284.3 300.5"/>
+    <path class="peer-chord c1 c4" d="M324.7 123.7 Q248.1 207.3 183.7 300.5"/>
+    <path class="peer-chord c1 c5" d="M324.7 123.7 Q226.2 179.7 120.9 221.8"/>
+    <path class="peer-chord c1 c6" d="M324.7 123.7 Q234 145.4 143.3 123.7"/>
+    <path class="peer-chord c2 c3" d="M347.1 221.8 Q291.2 241.6 284.3 300.5"/>
+    <path class="peer-chord c2 c4" d="M347.1 221.8 Q256 241.6 183.7 300.5"/>
+    <path class="peer-chord c2 c5" d="M347.1 221.8 Q234 214.1 120.9 221.8"/>
+    <path class="peer-chord c2 c6" d="M347.1 221.8 Q241.8 179.7 143.3 123.7"/>
+    <path class="peer-chord c3 c4" d="M284.3 300.5 Q234 269.2 183.7 300.5"/>
+    <path class="peer-chord c3 c5" d="M284.3 300.5 Q212 241.6 120.9 221.8"/>
+    <path class="peer-chord c3 c6" d="M284.3 300.5 Q219.9 207.3 143.3 123.7"/>
+    <path class="peer-chord c4 c5" d="M183.7 300.5 Q176.8 241.6 120.9 221.8"/>
+    <path class="peer-chord c4 c6" d="M183.7 300.5 Q184.6 207.3 143.3 123.7"/>
+    <path class="peer-chord c5 c6" d="M120.9 221.8 Q162.7 179.7 143.3 123.7"/>
+  </g>
+  <g class="peer-plates" fill="var(--surface)">
+    <circle class="peer-plate" cx="234" cy="80" r="20"/>
+    <circle class="peer-plate" cx="324.7" cy="123.7" r="20"/>
+    <circle class="peer-plate" cx="347.1" cy="221.8" r="20"/>
+    <circle class="peer-plate" cx="284.3" cy="300.5" r="20"/>
+    <circle class="peer-plate" cx="183.7" cy="300.5" r="20"/>
+    <circle class="peer-plate" cx="120.9" cy="221.8" r="20"/>
+    <circle class="peer-plate" cx="143.3" cy="123.7" r="20"/>
+  </g>
+  <g class="peer-rings" fill="none" stroke="var(--ink)">
+    <circle class="peer-ring" cx="234" cy="80" r="22" stroke-width="5.5"/>
+    <circle class="peer-ring" cx="324.7" cy="123.7" r="22" stroke-width="5.1"/>
+    <circle class="peer-ring" cx="347.1" cy="221.8" r="22" stroke-width="4.7"/>
+    <circle class="peer-ring" cx="284.3" cy="300.5" r="22" stroke-width="4.5"/>
+    <circle class="peer-ring" cx="183.7" cy="300.5" r="22" stroke-width="2.3"/>
+    <circle class="peer-ring" cx="120.9" cy="221.8" r="22" stroke-width="1.8"/>
+    <circle class="peer-ring zero" cx="143.3" cy="123.7" r="22" stroke="var(--line-strong)" stroke-width="1" stroke-dasharray="2 3"/>
+  </g>
+  <g class="peer-icons">
+    <use class="peer-ic n0" href="#ic-claude" x="220" y="66" width="28" height="28"/>
+    <use class="peer-ic mono n1" href="#ic-zai" x="310.7" y="109.7" width="28" height="28"/>
+    <use class="peer-ic mono n2" href="#ic-openai" x="333.1" y="207.8" width="28" height="28"/>
+    <use class="peer-ic n3" href="#ic-kimi" x="270.3" y="286.5" width="28" height="28" fill="#1783FF"/>
+    <use class="peer-ic mono n4" href="#ic-grok" x="169.7" y="286.5" width="28" height="28"/>
+    <use class="peer-ic n5" href="#ic-qwen" x="106.9" y="207.8" width="28" height="28"/>
+    <use class="peer-ic n6" href="#ic-meta" x="129.3" y="109.7" width="28" height="28"/>
+  </g>
+  <g class="peer-labels">
+    <text class="peer-name" x="234" y="25" text-anchor="middle" font-size="12" font-weight="500" fill="var(--ink)">Opus 5.5</text>
+    <text class="peer-w num" x="234" y="38" text-anchor="middle" font-size="10.5" fill="var(--muted)">0.231</text>
+    <text class="peer-name" x="357.5" y="84.5" text-anchor="start" font-size="12" font-weight="500" fill="var(--ink)">GLM-5.3</text>
+    <text class="peer-w num" x="357.5" y="97.5" text-anchor="start" font-size="10.5" fill="var(--muted)">0.215</text>
+    <text class="peer-name" x="388" y="229.2" text-anchor="start" font-size="12" font-weight="500" fill="var(--ink)">GPT-6 Astra</text>
+    <text class="peer-w num" x="388" y="242.2" text-anchor="start" font-size="10.5" fill="var(--muted)">0.197</text>
+    <text class="peer-name" x="302.6" y="346.4" text-anchor="start" font-size="12" font-weight="500" fill="var(--ink)">Kimi K3</text>
+    <text class="peer-w num" x="302.6" y="359.4" text-anchor="start" font-size="10.5" fill="var(--muted)">0.187</text>
+    <text class="peer-name" x="165.4" y="346.4" text-anchor="end" font-size="12" font-weight="500" fill="var(--ink)">Grok 4.6</text>
+    <text class="peer-w num" x="165.4" y="359.4" text-anchor="end" font-size="10.5" fill="var(--muted)">0.096</text>
+    <text class="peer-name" x="80" y="229.2" text-anchor="end" font-size="12" font-weight="500" fill="var(--ink)">Qwen 27B</text>
+    <text class="peer-w num" x="80" y="242.2" text-anchor="end" font-size="10.5" fill="var(--muted)">0.074</text>
+    <text class="peer-name" x="110.5" y="84.5" text-anchor="end" font-size="12" font-weight="500" fill="var(--ink)">Muse 30B</text>
+    <text class="peer-w num" x="110.5" y="97.5" text-anchor="end" font-size="10.5" fill="var(--muted)">0.000</text>
+  </g>
+  <g class="peer-hits" fill="none" pointer-events="all">
+    <circle class="peer-hit h0" cx="234" cy="80" r="26"><title>Opus 5.5 — judge weight 0.231</title></circle>
+    <circle class="peer-hit h1" cx="324.7" cy="123.7" r="26"><title>GLM-5.3 — judge weight 0.215</title></circle>
+    <circle class="peer-hit h2" cx="347.1" cy="221.8" r="26"><title>GPT-6 Astra — judge weight 0.197</title></circle>
+    <circle class="peer-hit h3" cx="284.3" cy="300.5" r="26"><title>Kimi K3 — judge weight 0.187</title></circle>
+    <circle class="peer-hit h4" cx="183.7" cy="300.5" r="26"><title>Grok 4.6 — judge weight 0.096</title></circle>
+    <circle class="peer-hit h5" cx="120.9" cy="221.8" r="26"><title>Qwen 27B — judge weight 0.074</title></circle>
+    <circle class="peer-hit h6" cx="143.3" cy="123.7" r="26"><title>Muse 30B — judge weight 0.000; PRD discards its votes</title></circle>
+  </g>
+  </svg>
+      </a>
+      <figcaption>Every model answers and judges. Ring thickness is judge weight. <a href="blog.html#how-it-works">How it works &rarr;</a></figcaption>
+    </figure>
   </header>
 
   <div class="bar">
