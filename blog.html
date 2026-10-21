@@ -468,13 +468,15 @@ svg.peer:has(.h6:hover) .peer-chord.c6 { opacity: 1; stroke: var(--blue); stroke
     <figcaption id="cap2"></figcaption>
   </figure>
 
-  <p>PRD sits closest to zero on all three measures and on both sets. <code>GPT-6 Astra</code> is the
+  <p>PRD stays within <span class="num">1.3pp</span> of the human rate on every measure and both sets; the
+  unweighted panel stays within <span class="num">4.1pp</span>. Only two single-judge bars come closer than PRD
+  on any measure. <code>GPT-6 Astra</code> is the
   outlier throughout, under-weighting length by <span class="num">21pp</span> on crowd votes and
   <span class="num">14pp</span> on expert votes.</p>
   <p>Family preference follows the same shape. <code>GPT-6 Astra</code> leans toward Claude answers by
-  <span class="num">+31pp</span> on crowd votes and <span class="num">+9pp</span> on expert votes; PRD,
-  which gives it almost no weight, carries <span class="num">+3pp</span> and
-  <span class="num">&minus;2pp</span>.</p>
+  <span class="num">+31pp</span> on crowd votes and <span class="num">+9pp</span> on expert votes; both
+  panels largely cancel it out, with PRD at <span class="num">+1.1pp</span> and <span class="num">&minus;1.3pp</span>
+  and the unweighted panel at <span class="num">+3.2pp</span> and <span class="num">&minus;0.6pp</span>.</p>
 
   <h3>Recovering the human ranking</h3>
 
@@ -606,8 +608,7 @@ const W = 672;
   document.getElementById("cap1").textContent =
     "Share of battles matching the human vote. The dashed line is what a rule with no model in it "
     + `scores — always pick the longer answer (${hE.toFixed(3)} on expert votes, ${hA.toFixed(3)} on `
-    + "crowd votes). Intervals are about ±0.03, so most gaps between methods are not separated. The "
-    + "crowd set is restricted to answers within 50% of each other in length; the expert set is complete.";
+    + "crowd votes).";
 }
 
 /* --- 2. bias, three measures on one shared scale --- */
