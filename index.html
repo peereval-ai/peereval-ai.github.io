@@ -444,7 +444,6 @@ svg.peer:has(.h6:hover) .peer-chord.c6 { opacity: 1; stroke: var(--blue); stroke
       { key: "name", label: "Model" },
       { key: "org", label: "Organization" },
       { key: "score", label: "PRD score" },
-      { key: "ci", label: "95% CI", tip: "How far the PRD score could move up or down if the evaluation were rerun on different questions (95% bootstrap interval)." },
       { key: "elo", label: "Elo", tip: "Bradley-Terry rating on the Elo scale. A 100-point gap means the higher model is expected to win about 64% of comparisons." }
     ];
     if (state.cat === "overall") {
@@ -482,7 +481,6 @@ svg.peer:has(.h6:hover) .peer-chord.c6 { opacity: 1; stroke: var(--blue); stroke
       if (k === "rank") return ranks[m.key];
       if (k === "score") return m[state.cat];
       if (k === "ub") return CI[m.key][state.cat][2];
-      if (k === "ci") return CI[m.key][state.cat][1] - CI[m.key][state.cat][0];
       if (k === "elo") return ELO[m.key][state.cat][0];
       return m[k];
     }
@@ -509,8 +507,6 @@ svg.peer:has(.h6:hover) .peer-chord.c6 { opacity: 1; stroke: var(--blue); stroke
         '<td class="model"><svg class="mi" aria-hidden="true"><use href="#' + m.icon + '"/></svg>' + m.name + "</td>" +
         '<td class="org">' + (ORG_URL[m.org] ? '<a href="' + ORG_URL[m.org] + '" target="_blank" rel="noopener">' + m.org + "</a>" : m.org) + "</td>" +
         '<td><span class="score num">' + s.toFixed(3) + "</span></td>" +
-        '<td class="ci num" title="95% interval ' + CI[m.key][state.cat][0].toFixed(3) + "–" + CI[m.key][state.cat][1].toFixed(3) + '">+' +
-        (CI[m.key][state.cat][1] - s).toFixed(3) + " / −" + (s - CI[m.key][state.cat][0]).toFixed(3) + "</td>" +
         '<td class="elo num" title="95% interval ' + ELO[m.key][state.cat][1] + "–" + ELO[m.key][state.cat][2] + '"><span class="score">' +
         ELO[m.key][state.cat][0] + '</span> <span class="ci">' + ELO[m.key][state.cat][1] + "–" + ELO[m.key][state.cat][2] + "</span></td>";
       if (state.cat === "overall") {
@@ -522,8 +518,8 @@ svg.peer:has(.h6:hover) .peer-chord.c6 { opacity: 1; stroke: var(--blue); stroke
     $("lb-body").innerHTML = html;
 
     $("lb-note").textContent = state.cat === "overall"
-      ? "PRD score over all three benchmarks. 95% CI: bootstrap interval over questions. Elo: Bradley-Terry rating on the Elo scale (100 points ≈ 64% expected win rate), with its 95% interval; only differences between models are meaningful. Rank (UB): the best rank a model could plausibly have, i.e. 1 + the number of models that are clearly better (their whole 95% interval is above this model's); models with the same Rank (UB) are statistically tied. Judge weight: how much PRD trusts the model as a judge (weights add up to 1). Self-bias: how much more the model likes its own answers than the other judges do. Each model also judges pairs it appears in; every pair is judged in both display orders."
-      : "PRD score on this benchmark. 95% CI: bootstrap interval over questions. Elo: Bradley-Terry rating on the Elo scale, with its 95% interval. Rank (UB): the best rank a model could plausibly have; models with the same Rank (UB) are statistically tied. ▲▼ shows the change from the model's overall rank.";
+      ? "PRD score over all three benchmarks; its 95% bootstrap interval is shown in the chart below. Elo: Bradley-Terry rating on the Elo scale (100 points ≈ 64% expected win rate), with its 95% interval; only differences between models are meaningful. Rank (UB): the best rank a model could plausibly have, i.e. 1 + the number of models that are clearly better (their whole 95% interval is above this model's); models with the same Rank (UB) are statistically tied. Judge weight: how much PRD trusts the model as a judge (weights add up to 1). Self-bias: how much more the model likes its own answers than the other judges do. Each model also judges pairs it appears in; every pair is judged in both display orders."
+      : "PRD score on this benchmark; its 95% bootstrap interval is shown in the chart below. Elo: Bradley-Terry rating on the Elo scale, with its 95% interval. Rank (UB): the best rank a model could plausibly have; models with the same Rank (UB) are statistically tied. ▲▼ shows the change from the model's overall rank.";
   }
 
   function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
