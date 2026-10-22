@@ -178,6 +178,7 @@ svg.peer:has(.h6:hover) .peer-chord.c6 { opacity: 1; stroke: var(--blue); stroke
       <li>Verdicts are combined with <b>PRD Peer Rank</b>, which gives more weight to judges whose own answers are rated highly, and are reported with 95% bootstrap confidence intervals and Elo-scale ratings.</li>
       <li>First release: 7 models, 3 benchmarks, 137 questions, 40,156 pairwise judgments. <a href="./">See the leaderboard.</a></li>
       <li>Judges are biased: every model favors its own answers, by up to 36 percentage points. Peer weighting reduces the influence of the least reliable judges.</li>
+      <li>Against human votes, PRD beats single judges and the unweighted panel.</li>
       <li>The method is available as an open-source package: <code>pip install peereval</code>.</li>
     </ul>
   </div>
